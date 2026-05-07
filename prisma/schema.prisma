@@ -1,0 +1,100 @@
+generator client {
+	provider = "prisma-client"
+	output   = "./generated"
+}
+
+datasource db {
+	provider = "mysql"
+}
+
+model User {
+	id Int @id @default(autoincrement())
+	name String @unique
+	email String
+	role String
+	pwhash Bytes @db.Binary(32)
+
+	courses Course[]
+	courseGrades CourseGrade[]
+	forums Forum[]
+	forumComments ForumComment[]
+}
+
+model Course {
+	id Int @id @default(autoincrement())
+	name String
+
+	users User[]
+	sessions CourseSession[]
+	gradesComp CourseGradeComp[]
+	forums Forum[]
+}
+
+model CourseSession {
+	id Int @id @default(autoincrement())
+	courseid Int
+	topic String
+	sessionNo Int
+	startTime DateTime
+	endTime DateTime
+
+	files File[]
+	course Course @relation(fields: [courseid], references: [id])
+
+	@@index([startTime, endTime])
+}
+
+model CourseGradeComp {
+	id Int @id @default(autoincrement())
+	name String
+	courseid Int
+
+	grades CourseGrade[]
+	course Course @relation(fields: [courseid], references: [id])
+}
+
+model CourseGrade {
+	id Int @id @default(autoincrement())
+	compid Int
+	userid Int
+	grade Int
+
+	comp CourseGradeComp @relation(fields: [compid], references: [id])
+	user User @relation(fields: [userid], references: [id])
+}
+
+model Forum {
+	id Int @id @default(autoincrement())
+	title String
+	userid Int
+	courseid Int
+	time DateTime
+	body String @db.VarChar(4000)
+
+	comments ForumComment[]
+	course Course @relation(fields: [courseid], references: [id])
+	user User @relation(fields: [userid], references: [id])
+}
+
+model ForumComment {
+	id Int @id @default(autoincrement())
+	forumid Int
+	parentid Int?
+	userid Int
+	time DateTime
+	body String @db.VarChar(4000)
+
+	replies ForumComment[] @relation(name: "parent")
+
+	parent ForumComment? @relation(name: "parent", fields: [parentid], references: [id])
+	forum Forum @relation(fields: [forumid], references: [id])
+	user User @relation(fields: [userid], references: [id])
+}
+
+model File {
+	hash Bytes @db.Binary(32) @id
+	name String
+	size Int
+
+	courseSessions CourseSession[]
+}
