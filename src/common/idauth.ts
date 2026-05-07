@@ -1,5 +1,5 @@
 import type App from "#common/app";
-import { CanActivate, ExecutionContext, NotFoundException, UnauthorizedException } from "@nestjs/common"
+import { CanActivate, ExecutionContext, InternalServerErrorException, NotFoundException, UnauthorizedException } from "@nestjs/common"
 
 abstract class IdAuthGuard<X> implements CanActivate {
 	static create<T extends typeof IdAuthGuard<any>, V = T extends typeof IdAuthGuard<infer R> ? R : any>(this: T, getId: IdAuthGuard.IdGetter<V>): Constructable<T> {
@@ -11,11 +11,16 @@ abstract class IdAuthGuard<X> implements CanActivate {
 
 	constructor(...args: any[]) {}
 
+	descriptor = '?'
+
 	static param<T extends typeof IdAuthGuard<any>, V = T extends typeof IdAuthGuard<infer R> ? R : any>(this: T, id: string, cast: (v: string) => V): Constructable<T> {
 		return this.create(req => cast(req.params[id] as string))
 	}
 
 	async canActivate(context: ExecutionContext): Promise<boolean> {
+		if (!this.getId) {
+			throw new TypeError(`Cannot use IdAuthGuard(${this.descriptor}) directly (getId not implemented)`)
+		}
 		const req = context.switchToHttp().getRequest()
 		if (!req.userId) {
 			console.log('CourseGuard cannot determine userId - is AuthGuard provided?')
