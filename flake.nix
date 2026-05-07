@@ -1,6 +1,6 @@
 {
 	inputs = {
-		nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
+		nixpkgs.url = "github:nixos/nixpkgs/nixos-25.11";
 	};
 
 	outputs = { self, nixpkgs }@inputs:
@@ -18,6 +18,7 @@
 			packages = with pkgs; [
 				nodejs
         bun
+        prisma_7
 				];
 			shellHook = "tmux -L Leaper-API new-session -A -s Leaper-API";
 			};
