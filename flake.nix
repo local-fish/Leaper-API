@@ -17,6 +17,7 @@
 			name="Leaper-API";
 			packages = with pkgs; [
 				nodejs
+        bun
 				];
 			shellHook = "tmux -L Leaper-API new-session -A -s Leaper-API";
 			};
