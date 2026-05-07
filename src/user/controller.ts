@@ -6,7 +6,7 @@ import type App from "#common/app";
 @Controller()
 @UseGuards(AuthGuard)
 export default class UserController {
-	constructor(public svc: UserProvider) {}
+	constructor(private svc: UserProvider) {}
 
 	@Get('/user/info')
 	getUserInfo(@Request() req: App.Request) {

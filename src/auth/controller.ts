@@ -11,7 +11,7 @@ export class LoginBody {
 
 @Controller()
 export default class AuthController {
-	constructor(public svc: AuthProvider) {}
+	constructor(private svc: AuthProvider) {}
 
 	@HttpCode(200)
 	@Post('/login')

@@ -9,8 +9,8 @@ const secretConst = 'J8rnlOZIRw7ruly_'
 @Injectable()
 export default class AuthProvider {
 	constructor(
-		public userSvc: UserProvider,
-		public jwtSvc: JwtService,
+		private userSvc: UserProvider,
+		private jwtSvc: JwtService,
 	) {}
 
 	hashPassword(username: string, password: string) {

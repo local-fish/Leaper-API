@@ -6,7 +6,7 @@ import type App from "#common/app";
 @Controller()
 @UseGuards(AuthGuard)
 export default class CourseController {
-	constructor(public svc: CourseProvider) {}
+	constructor(private svc: CourseProvider) {}
 
 	async guard(req: App.Request, courseId: number) {
 		if (!await this.svc.hasUser(courseId, req.userId!)) throw new NotFoundException()
