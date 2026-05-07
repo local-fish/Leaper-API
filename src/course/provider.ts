@@ -91,6 +91,35 @@ export default class CourseProvider {
 		})
 		return q?.sessions ?? []
 	}
+
+	async sessionHasUser(sessionId: number, userId: number) {
+		return !!await db.courseSession.findFirst({
+			select: { id: true },
+			where: { id: sessionId, course: { users: { some: { id: userId } } } }
+		})
+	}
+
+	getSessionDetail(sessionId: number) {
+		return db.courseSession.findFirst({
+			select: {
+				courseid: true,
+				topic: true,
+				id: true,
+				sessionNo: true,
+				startTime: true,
+				endTime: true,
+			},
+			where: { id: sessionId }
+		})
+	}
+
+	async getSessionMaterials(sessionId: number) {
+		const files = await db.courseSession.findFirst({
+			select: { files: { select: { name: true, size: true, hash: true } } },
+			where: { id: sessionId },
+		})
+		return files?.files.map(v => ({ ...v, hash: Buffer.from(v.hash).toString('base64url') })) ?? []
+	}
 }
 
 export const courseProvider = new CourseProvider()
