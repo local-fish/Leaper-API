@@ -1,13 +1,17 @@
 Backend project for Leaper app
 
+## Requirements
+
+- [`Bun`](https://bun.sh/)
+
 ## Setup
 
-Install dependencies: `pnpm i`
+1. Install dependencies: `bun i`
 
-Generate database: `prisma generate && prisma db push`
+2. Configure database: `cp .env.example .env`
 
-Configure database: `cp .env.example .env`
+3. Generate database: `bun prisma generate && bun prisma db push`
 
 ## Running
 
-Run with bun: `bun src/main.ts`
+Run `bun start`
