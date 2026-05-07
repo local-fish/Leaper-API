@@ -2,45 +2,41 @@ import { Controller, UseGuards, Get, Request, Param, ParseIntPipe, NotFoundExcep
 import CourseProvider from "./provider";
 import AuthGuard from "#user/authguard";
 import type App from "#common/app";
+import CourseGuard from "./guard";
 
 @Controller()
 @UseGuards(AuthGuard)
 export default class CourseController {
 	constructor(private svc: CourseProvider) {}
 
-	async guard(req: App.Request, courseId: number) {
-		if (!await this.svc.hasUser(courseId, req.userId!)) throw new NotFoundException()
-	}
-
 	@Get('/courses')
-	getCourses(@Request() req: App.Request) {
+	getUserCourses(@Request() req: App.Request) {
 		return this.svc.getCoursesFromUser(req.userId!)
 	}
 
 	@Get('/course/:id')
-	async getInfo(@Request() req: App.Request, @Param('id', ParseIntPipe) id: number) {
-		await this.guard(req, id)
-
+	@UseGuards(CourseGuard.param('id'))
+	async getInfo(@Param('id', ParseIntPipe) id: number) {
 		const course = await this.svc.getInfo(id)
 		if (course) return course
 		throw new NotFoundException()
 	}
 
 	@Get('/course/:id/students')
-	async getStudents(@Request() req: App.Request, @Param('id', ParseIntPipe) id: number) {
-		await this.guard(req, id)
+	@UseGuards(CourseGuard.param('id'))
+	async getStudents(@Param('id', ParseIntPipe) id: number) {
 		return this.svc.getUsers(id)
 	}
 
 	@Get('/course/:id/sessions')
-	async getSessions(@Request() req: App.Request, @Param('id', ParseIntPipe) id: number) {
-		await this.guard(req, id)
+	@UseGuards(CourseGuard.param('id'))
+	async getSessions(@Param('id', ParseIntPipe) id: number) {
 		return this.svc.getSessions(id)
 	}
 
 	@Get('/course/:id/grades')
-	async getCourseGrades(@Request() req: App.Request, @Param('id', ParseIntPipe) id: number) {
-		await this.guard(req, id)
+	@UseGuards(CourseGuard.param('id'))
+	async getGrades(@Request() req: App.Request, @Param('id', ParseIntPipe) id: number) {
 		return this.svc.getUserGradesCourse(id, req.userId!)
 	}
 
@@ -48,5 +44,4 @@ export default class CourseController {
 	async getUserGrades(@Request() req: App.Request) {
 		return this.svc.getUserGrades(req.userId!)
 	}
-
 }
