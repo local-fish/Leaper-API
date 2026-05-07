@@ -3,6 +3,11 @@ import { Injectable } from '@nestjs/common'
 
 @Injectable()
 export default class CourseSessionProvider {
+	async hasUser(sessionId: number, userId: number) {
+		return !!await db.courseSession.findFirst({
+			where: { id: sessionId, course: { users: { some: { id: userId } } } }
+		})
+	}
 
 	getSessionDetail(sessionId: number) {
 		return db.courseSession.findFirst({
@@ -19,11 +24,11 @@ export default class CourseSessionProvider {
 	}
 
 	async getSessionMaterials(sessionId: number) {
-		const files = await db.file.findMany({
-			select: { name: true, size: true, hash: true },
-			where: { courseSessions: { some: { id: sessionId } } }
+		const files = await db.courseSession.findFirst({
+			select: { files: { select: { name: true, size: true, hash: true } } },
+			where: { id: sessionId },
 		})
-		return files.map(v => ({ ...v, hash: Buffer.from(v.hash).toString('base64url') }))
+		return files?.files.map(v => ({ ...v, hash: Buffer.from(v.hash).toString('base64url') })) ?? []
 	}
 }
 
