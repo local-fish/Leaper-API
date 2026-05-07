@@ -32,6 +32,12 @@ export default class CourseController {
 		return this.svc.getUsers(id)
 	}
 
+	@Get('/course/:id/sessions')
+	async getSessions(@Request() req: App.Request, @Param('id', ParseIntPipe) id: number) {
+		await this.guard(req, id)
+		return this.svc.getSessions(id)
+	}
+
 	@Get('/course/:id/grades')
 	async getCourseGrades(@Request() req: App.Request, @Param('id', ParseIntPipe) id: number) {
 		await this.guard(req, id)

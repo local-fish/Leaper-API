@@ -3,18 +3,6 @@ import { Injectable } from '@nestjs/common'
 
 @Injectable()
 export default class CourseSessionProvider {
-	getSessionsFromCourse(courseId: number) {
-		return db.courseSession.findMany({
-			select: {
-				topic: true,
-				id: true,
-				sessionNo: true,
-				startTime: true,
-				endTime: true
-			},
-			where: { courseid: courseId }
-		})
-	}
 
 	getSessionDetail(sessionId: number) {
 		return db.courseSession.findFirst({

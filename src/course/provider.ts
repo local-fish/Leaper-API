@@ -24,11 +24,12 @@ export default class CourseProvider {
 		})
 	}
 
-	getUsers(courseId: number) {
-		return db.user.findMany({
-			select: { id: true, name: true, email: true, role: true },
-			where: { courses: { some: { id: courseId } } }
+	async getUsers(courseId: number) {
+		const r = await db.course.findFirst({
+			select: { users: { select: { id: true, name: true, email: true, role: true } } },
+			where: { id: courseId }
 		})
+		return r?.users ?? []
 	}
 
 	async getUserGrades(userId: number) {
@@ -71,6 +72,24 @@ export default class CourseProvider {
 			where: { courseid: courseId }
 		})
 		return q.map(v => ({ name: v.name, grade: v.grades[0]?.grade })) ?? []
+	}
+
+	async getSessions(courseId: number) {
+		const q = await db.course.findFirst({
+			select: {
+				sessions: {
+					select: {
+						topic: true,
+						id: true,
+						sessionNo: true,
+						startTime: true,
+						endTime: true
+					}
+				}
+			},
+			where: { id: courseId }
+		})
+		return q?.sessions ?? []
 	}
 }
 
