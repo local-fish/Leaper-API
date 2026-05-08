@@ -40,7 +40,7 @@ model CourseSession {
 	location String
 
 	files File[]
-	course Course @relation(fields: [courseId], references: [id])
+	course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
 	@@index([startTime, endTime])
 }
@@ -51,7 +51,7 @@ model CourseGradeComp {
 	courseId Int
 
 	grades CourseGrade[]
-	course Course @relation(fields: [courseId], references: [id])
+	course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
 }
 
 model CourseGrade {
@@ -60,8 +60,8 @@ model CourseGrade {
 	userId Int
 	grade Int
 
-	comp CourseGradeComp @relation(fields: [compid], references: [id])
-	user User @relation(fields: [userId], references: [id])
+	comp CourseGradeComp @relation(fields: [compid], references: [id], onDelete: Cascade)
+	user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Forum {
@@ -73,8 +73,8 @@ model Forum {
 	body String @db.VarChar(4000)
 
 	comments ForumComment[]
-	course Course @relation(fields: [courseId], references: [id])
-	user User @relation(fields: [userId], references: [id])
+	course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+	user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model ForumComment {
@@ -87,9 +87,9 @@ model ForumComment {
 
 	replies ForumComment[] @relation(name: "parent")
 
-	parent ForumComment? @relation(name: "parent", fields: [parentId], references: [id])
-	forum Forum @relation(fields: [forumId], references: [id])
-	user User @relation(fields: [userId], references: [id])
+	parent ForumComment? @relation(name: "parent", fields: [parentId], references: [id], onDelete: Cascade)
+	forum Forum @relation(fields: [forumId], references: [id], onDelete: Cascade)
+	user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model File {
