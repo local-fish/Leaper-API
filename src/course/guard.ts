@@ -13,6 +13,6 @@ export default abstract class CourseGuard extends IdAuthGuard<number|void> {
 	descriptor = 'Course'
 
 	protected async validate(req: App.Request, userId: number, courseId: number|void) {
-		return courseId != undefined && await this.courseSvc.hasUser(courseId, userId)
+		return courseId != undefined && courseId == courseId && await this.courseSvc.hasUser(courseId, userId)
 	}
 }

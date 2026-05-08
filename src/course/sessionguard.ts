@@ -12,7 +12,7 @@ export default abstract class CourseSessionGuard extends IdAuthGuard<number|void
 	constructor(private courseSvc: CourseProvider) { super() }
 	descriptor = 'CourseSession'
 
-	protected async validate(req: App.Request, userId: number, courseId: number|void) {
-		return courseId != undefined && await this.courseSvc.sessionHasUser(courseId, userId)
+	protected async validate(req: App.Request, userId: number, sessionId: number|void) {
+		return sessionId != undefined && sessionId == sessionId && await this.courseSvc.sessionHasUser(sessionId, userId)
 	}
 }
