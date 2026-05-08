@@ -1,5 +1,6 @@
 import db from "#common/db";
 import { authProvider } from "#auth/provider";
+import { Prisma } from "#prisma/client";
 if (!process.env.DEV) throw new Error('DEV must be set to true')
 
 const fileHashes = [
@@ -47,13 +48,34 @@ function shuffleArr2<T extends any>(arr: Iterable<T>, max?: number) {
 	return n
 }
 
-async function createUsers() {
-	const users = await db.user.findMany({
-		select: { id: true, name: true },
-		where: { name: { in: usersList } }
+function randstr(length: number, charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ') {
+	let s = ''
+	for (let i = 0; i < length; i++) s += charset[randint(0, charset.length)]
+	return s
+}
+
+async function getUsers(select?: Prisma.UserSelect, where?: Prisma.UserWhereInput) {
+	return await db.user.findMany({
+		select: { id: true, name: true, ...select },
+		where: { name: { in: usersList }, ...where }
 	})
-	const nonexist = new Set(usersList)
-	for (const e of users) nonexist.delete(e.name)
+}
+
+async function getCourses(select?: Prisma.CourseSelect, where?: Prisma.CourseWhereInput, users = false) {
+	return await db.course.findMany({
+		select: {
+			id: true,
+			name: true,
+			users: users ? { select: { id: true, name: true }, where: { name: { in: usersList } } } : undefined,
+			...select
+		},
+		where: { name: { in: Array.from(coursesList) }, ...where }
+	})
+}
+
+async function createUsers() {
+	const users = await getUsers()
+	const nonexist = new Set(usersList).difference(new Set(users.map(v => v.name)))
 	if (!nonexist.size) return
 
 	console.log(`Users to create: ${Array.from(nonexist)}`)
@@ -67,12 +89,8 @@ async function createUsers() {
 	})
 }
 async function createCourses() {
-	const courses = await db.course.findMany({
-		select: { id: true, name: true },
-		where: { name: { in: coursesList } }
-	})
-	const nonexist = new Set(coursesList)
-	for (const e of courses) nonexist.delete(e.name)
+	const courses = await getCourses()
+	const nonexist = new Set(coursesList).difference(new Set(courses.map(v => v.name)))
 	if (!nonexist.size) return
 
 	console.log(`Courses to create: ${Array.from(nonexist)}`)
@@ -101,14 +119,8 @@ async function createFiles() {
 	})
 }
 async function enrollUsersToCourses() {
-	const users = await db.user.findMany({
-		select: { id: true, name: true },
-		where: { name: { in: usersList } }
-	})
-	const courses = await db.course.findMany({
-		select: { id: true, name: true },
-		where: { name: { in: Array.from(coursesList) }, users: { none: {} } }
-	})
+	const users = await getUsers()
+	const courses = await getCourses({}, { users: { none: {} }})
 	const waits = []
 	for (const course of courses) {
 		const enrolls = []
@@ -127,15 +139,7 @@ async function enrollUsersToCourses() {
 	await Promise.all(waits)
 }
 async function createCourseSession() {
-	const courses = await db.course.findMany({
-		select: {
-			id: true, name: true,
-			sessions: { select: { sessionNo: true } }
-		},
-		where: { name: { in: Array.from(coursesList) } }
-	})
-	courses.sort((a, b) => a.id - b.id)
-
+	const courses = await getCourses({ sessions: { select: { sessionNo: true } } })
 	const waits = []
 	for (const course of courses) {
 		let dateStart = new Date(Date.now() + ((Math.random() - 0.5) * 14*24*60*60*1000))
@@ -150,8 +154,8 @@ async function createCourseSession() {
 				data: {
 					startTime: new Date(dateStart),
 					endTime: new Date(dateStart.getTime() + 60*60*1000*5),
-					topic: shuffleArr2('abcdefghijklmnopqrstuvwxyz', 10).join(''),
-					location: shuffleArr2('abcdefghijklmnopqrstuvwxyz', 10).join(''),
+					topic: randstr(10),
+					location: randstr(10),
 					sessionNo: i,
 					courseId: course.id,
 					files: { connect: shuffleArr2(fileHashesBuf, randint(0, 3)).map(v => ({hash: v})) }
@@ -164,21 +168,11 @@ async function createCourseSession() {
 	await Promise.all(waits)
 }
 async function createGrades() {
-	const users = await db.user.findMany({
-		select: { id: true, name: true },
-		where: { name: { in: usersList } }
-	})
-	const courses = await db.course.findMany({
-		select: {
-			id: true, name: true,
-			users: { select: { id: true }, where: { name: { in: usersList } } }
-		},
-		where: { name: { in: Array.from(coursesList) }, gradesComp: { none: {} } }
-	})
+	const courses = await getCourses({}, { gradesComp: { none: {} } }, true)
 	const waits = []
 	for (const course of courses) {
-		const courseUsers = new Set(course.users.map(v => v.id))
-		const names = shuffleArr2(gradeCompsList, randint(0, 4))
+		const names = shuffleArr2(gradeCompsList, randint(1, 4))
+
 		console.log(`Creating grades ${course.name}(${course.id}): ${names}`)
 		for (const name of names) {
 			const q = db.courseGradeComp.create({
@@ -188,9 +182,9 @@ async function createGrades() {
 				}
 			}).then(comp => {
 				const datas = []
-				for (const user of users) {
-					// 30% chance for score to be already graded for each user
-					if (!(courseUsers.has(user.id) && Math.random() < 0.3)) continue
+				for (const user of course.users) {
+					// 70% chance for score to be already graded for each user
+					if (!(Math.random() < 0.7)) continue
 					datas.push({
 						grade: Math.random() * 100,
 						compid: comp.id,
