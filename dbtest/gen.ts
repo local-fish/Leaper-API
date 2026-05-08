@@ -153,7 +153,7 @@ async function createCourseSession() {
 					topic: 'asdjsdfhsifsf',
 					location: shuffleArr2('', 10).join(''),
 					sessionNo: i,
-					courseid: course.id,
+					courseId: course.id,
 					files: { connect: shuffleArr2(fileHashesBuf, randint(0, 3)).map(v => ({hash: v})) }
 				}
 			})
@@ -184,7 +184,7 @@ async function createGrades() {
 			const q = db.courseGradeComp.create({
 				data: {
 					name: name,
-					courseid: course.id
+					courseId: course.id
 				}
 			}).then(comp => {
 				const datas = []
@@ -194,7 +194,7 @@ async function createGrades() {
 					datas.push({
 						grade: Math.random() * 100,
 						compid: comp.id,
-						userid: user.id
+						userId: user.id
 					})
 				}
 				return db.courseGrade.createMany({ data: datas })

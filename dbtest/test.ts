@@ -1,6 +1,5 @@
 import db from "#common/db";
 import { courseProvider } from "#course/provider";
-import { courseSessionProvider } from "#coursesession/provider";
 import { userProvider as user } from "#user/provider";
 if (!process.env.DEV) throw new Error('DEV must be set to true')
 
@@ -47,11 +46,11 @@ for (const { id: courseId } of courses) {
 	}
 	{
 		console.log('Sessions')
-		const sessions = await courseSessionProvider.getSessionsFromCourse(courseId)
+		const sessions = await courseProvider.getSessions(courseId)
 		for (const session of sessions) {
 			console.log(` - [${session.id}] ${session.topic} (${session.startTime.toLocaleString()} - ${session.endTime.toLocaleString()})`)
 			console.log('   Materials:')
-			const materials = await courseSessionProvider.getSessionMaterials(session.id)
+			const materials = await courseProvider.getSessionMaterials(session.id)
 			for (const material of materials) {
 				console.log(`    - [${material.hash}] ${material.name.padEnd(10)} (${material.size})`)
 			}
