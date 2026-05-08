@@ -66,10 +66,10 @@ export default class CourseProvider {
 				name: true,
 				grades: {
 					select: { grade: true },
-					where: { userid: userId }
+					where: { userId: userId }
 				}
 			},
-			where: { courseid: courseId }
+			where: { courseId: courseId }
 		})
 		return q.map(v => ({ name: v.name, grade: v.grades[0]?.grade })) ?? []
 	}
@@ -103,7 +103,7 @@ export default class CourseProvider {
 	async getSessionDetail(sessionId: number) {
 		return db.courseSession.findFirst({
 			select: {
-				courseid: true,
+				courseId: true,
 				topic: true,
 				id: true,
 				sessionNo: true,

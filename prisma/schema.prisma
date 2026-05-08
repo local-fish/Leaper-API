@@ -32,7 +32,7 @@ model Course {
 
 model CourseSession {
 	id Int @id @default(autoincrement())
-	courseid Int
+	courseId Int
 	topic String
 	sessionNo Int
 	startTime DateTime
@@ -40,7 +40,7 @@ model CourseSession {
 	location String @default("unknown")
 
 	files File[]
-	course Course @relation(fields: [courseid], references: [id])
+	course Course @relation(fields: [courseId], references: [id])
 
 	@@index([startTime, endTime])
 }
@@ -48,48 +48,48 @@ model CourseSession {
 model CourseGradeComp {
 	id Int @id @default(autoincrement())
 	name String
-	courseid Int
+	courseId Int
 
 	grades CourseGrade[]
-	course Course @relation(fields: [courseid], references: [id])
+	course Course @relation(fields: [courseId], references: [id])
 }
 
 model CourseGrade {
 	id Int @id @default(autoincrement())
 	compid Int
-	userid Int
+	userId Int
 	grade Int
 
 	comp CourseGradeComp @relation(fields: [compid], references: [id])
-	user User @relation(fields: [userid], references: [id])
+	user User @relation(fields: [userId], references: [id])
 }
 
 model Forum {
 	id Int @id @default(autoincrement())
 	title String
-	userid Int
-	courseid Int
+	userId Int
+	courseId Int
 	time DateTime
 	body String @db.VarChar(4000)
 
 	comments ForumComment[]
-	course Course @relation(fields: [courseid], references: [id])
-	user User @relation(fields: [userid], references: [id])
+	course Course @relation(fields: [courseId], references: [id])
+	user User @relation(fields: [userId], references: [id])
 }
 
 model ForumComment {
 	id Int @id @default(autoincrement())
-	forumid Int
-	parentid Int?
-	userid Int
+	forumId Int
+	parentId Int?
+	userId Int
 	time DateTime
 	body String @db.VarChar(4000)
 
 	replies ForumComment[] @relation(name: "parent")
 
-	parent ForumComment? @relation(name: "parent", fields: [parentid], references: [id])
-	forum Forum @relation(fields: [forumid], references: [id])
-	user User @relation(fields: [userid], references: [id])
+	parent ForumComment? @relation(name: "parent", fields: [parentId], references: [id])
+	forum Forum @relation(fields: [forumId], references: [id])
+	user User @relation(fields: [userId], references: [id])
 }
 
 model File {
