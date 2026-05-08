@@ -37,6 +37,7 @@ model CourseSession {
 	sessionNo Int
 	startTime DateTime
 	endTime DateTime
+	location String @default("unknown")
 
 	files File[]
 	course Course @relation(fields: [courseid], references: [id])

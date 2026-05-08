@@ -83,7 +83,8 @@ export default class CourseProvider {
 						id: true,
 						sessionNo: true,
 						startTime: true,
-						endTime: true
+						endTime: true,
+						location: true
 					}
 				}
 			},
@@ -108,6 +109,7 @@ export default class CourseProvider {
 				sessionNo: true,
 				startTime: true,
 				endTime: true,
+				location: true
 			},
 			where: { id: sessionId }
 		})
