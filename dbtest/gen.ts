@@ -48,7 +48,7 @@ function shuffleArr2<T extends any>(arr: Iterable<T>, max?: number) {
 	return n
 }
 
-function randstr(length: number, charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ') {
+function randstr(length: number, charset = '        abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ') {
 	let s = ''
 	for (let i = 0; i < length; i++) s += charset[randint(0, charset.length)]
 	return s
@@ -198,6 +198,60 @@ async function createGrades() {
 	}
 	await Promise.all(waits)
 }
+interface CommentForumInfo {
+	forumId: number
+	users: number[]
+	successFactor: number
+}
+
+async function commentForum(info: CommentForumInfo, chance: number, parent?: number) {
+	const waits = []
+	for (const user of info.users) {
+		if (!(Math.random() < chance)) continue
+		const q = db.forumComment.create({
+			data: {
+				body: randstr(randint(20, 80)),
+				time: new Date(),
+				forumId: info.forumId,
+				userId: user,
+				parentId: parent
+			}
+		}).then(comment =>
+			commentForum(info, chance * info.successFactor, comment.id)
+		)
+		waits.push(q)
+	}
+	await Promise.all(waits)
+}
+async function createForums() {
+	const courses = await getCourses({}, { forums: { none: {} } }, true)
+	const waits = []
+	for (const course of courses) {
+		const userIds = course.users.map(v => v.id)
+		// select half users on a course
+		const usersCreating = shuffleArr2(course.users, Math.ceil(course.users.length / 2))
+		for (const user of usersCreating) {
+			console.log(`Creating forum ${course.name}(${course.id}) - ${user.name}(${user.id})`)
+			const q = db.forum.create({
+				data: {
+					title: randstr(15),
+					body: randstr(randint(200, 600)),
+					time: new Date(),
+					userId: user.id,
+					courseId: course.id
+				}
+			}).then(forum =>
+				commentForum({
+					forumId: forum.id,
+					users: userIds,
+					successFactor: 0.4
+				}, 0.8)
+			)
+			waits.push(q)
+		}
+	}
+	await Promise.all(waits)
+}
 
 const Cfile = createFiles()
 const Cuser = createUsers()
@@ -205,7 +259,8 @@ const Ccourse = createCourses()
 const Csession = Promise.all([Ccourse, Cfile]).then(createCourseSession)
 const Cenroll = Promise.all([Cuser, Ccourse]).then(enrollUsersToCourses)
 const Cgrades = Cenroll.then(createGrades)
+const Cforums = Cenroll.then(createForums)
 
-await Promise.all([Cfile, Cuser, Ccourse, Csession, Cenroll, Cgrades])
+await Promise.all([Cfile, Cuser, Ccourse, Csession, Cenroll, Cgrades, Cforums])
 
 db.$disconnect()
