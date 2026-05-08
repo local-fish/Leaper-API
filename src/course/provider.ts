@@ -25,11 +25,10 @@ export default class CourseProvider {
 	}
 
 	async getUsers(courseId: number) {
-		const r = await db.course.findFirst({
-			select: { users: { select: { id: true, name: true, email: true, role: true } } },
-			where: { id: courseId }
+		return db.user.findMany({
+			select: { id: true, name: true, email: true, role: true },
+			where: { courses: { some: { id: courseId } } }
 		})
-		return r?.users ?? []
 	}
 
 	async getUserGrades(userId: number) {
@@ -75,22 +74,17 @@ export default class CourseProvider {
 	}
 
 	async getSessions(courseId: number) {
-		const q = await db.course.findFirst({
+		return db.courseSession.findMany({
 			select: {
-				sessions: {
-					select: {
-						topic: true,
-						id: true,
-						sessionNo: true,
-						startTime: true,
-						endTime: true,
-						location: true
-					}
-				}
+				topic: true,
+				id: true,
+				sessionNo: true,
+				startTime: true,
+				endTime: true,
+				location: true
 			},
-			where: { id: courseId }
+			where: { courseId: courseId }
 		})
-		return q?.sessions ?? []
 	}
 
 	async sessionHasUser(sessionId: number, userId: number) {
@@ -116,11 +110,11 @@ export default class CourseProvider {
 	}
 
 	async getSessionMaterials(sessionId: number) {
-		const files = await db.courseSession.findFirst({
-			select: { files: { select: { name: true, size: true, hash: true } } },
-			where: { id: sessionId },
+		const files = await db.file.findMany({
+			select: { name: true, size: true, hash: true },
+			where: { courseSessions: { some: { id: sessionId } } }
 		})
-		return files?.files.map(v => ({ ...v, hash: Buffer.from(v.hash).toString('base64url') })) ?? []
+		return files.map(v => ({ ...v, hash: Buffer.from(v.hash).toString('base64url') }))
 	}
 }
 
