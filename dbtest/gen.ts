@@ -150,8 +150,8 @@ async function createCourseSession() {
 				data: {
 					startTime: new Date(dateStart),
 					endTime: new Date(dateStart.getTime() + 60*60*1000*5),
-					topic: 'asdjsdfhsifsf',
-					location: shuffleArr2('', 10).join(''),
+					topic: shuffleArr2('abcdefghijklmnopqrstuvwxyz', 10).join(''),
+					location: shuffleArr2('abcdefghijklmnopqrstuvwxyz', 10).join(''),
 					sessionNo: i,
 					courseId: course.id,
 					files: { connect: shuffleArr2(fileHashesBuf, randint(0, 3)).map(v => ({hash: v})) }
