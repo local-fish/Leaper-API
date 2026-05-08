@@ -1,5 +1,6 @@
 import db from "#common/db";
 import { courseProvider } from "#course/provider";
+import { forumProvider } from "#forum/provider";
 import { userProvider as user } from "#user/provider";
 if (!process.env.DEV) throw new Error('DEV must be set to true')
 
@@ -30,6 +31,15 @@ for (const {id: userid} of users) {
 	console.log()
 }
 
+async function forumComments(forumId: number, parentId: number | null | undefined = null, depth = 1) {
+	const stack = ' . '.repeat(depth)
+	const comments = await forumProvider.getComments(forumId, parentId)
+	for (const comment of comments) {
+		console.log(stack + ` -> [${comment.id}] [${comment.user.id}] ${comment.user.name}`)
+		await forumComments(forumId, comment.id, depth + 1)
+	}
+}
+
 console.log('====== COURSES ======')
 const courses = await db.course.findMany({ select: { id: true } })
 for (const { id: courseId } of courses) {
@@ -54,6 +64,14 @@ for (const { id: courseId } of courses) {
 			for (const material of materials) {
 				console.log(`    - [${material.hash}] ${material.name.padEnd(10)} (${material.size})`)
 			}
+		}
+	}
+	{
+		console.log('Forums')
+		const forums = await forumProvider.getForumsFromCourse(courseId)
+		for (const forum of forums) {
+			console.log(` - [${forum.id}] ${forum.title} (by [${forum.user.id}] ${forum.user.name})`)
+			await forumComments(forum.id)
 		}
 	}
 	console.log()
