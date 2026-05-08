@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common'
 
 @Injectable()
 export default class CourseProvider {
-	getCoursesFromUser(userid: number) {
+	async getCoursesFromUser(userid: number) {
 		return db.course.findMany({
 			select: { id: true, name: true },
 			where: { users: { some: { id: userid } } }
@@ -17,7 +17,7 @@ export default class CourseProvider {
 		})
 	}
 
-	getInfo(courseId: number) {
+	async getInfo(courseId: number) {
 		return db.course.findFirst({
 			select: { id: true, name: true },
 			where: { id: courseId }
@@ -100,7 +100,7 @@ export default class CourseProvider {
 		})
 	}
 
-	getSessionDetail(sessionId: number) {
+	async getSessionDetail(sessionId: number) {
 		return db.courseSession.findFirst({
 			select: {
 				courseid: true,

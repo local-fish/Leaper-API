@@ -11,7 +11,7 @@ export default class CourseController {
 	constructor(private svc: CourseProvider) {}
 
 	@Get('/courses')
-	getUserCourses(@Request() req: App.Request) {
+	async getUserCourses(@Request() req: App.Request) {
 		return this.svc.getCoursesFromUser(req.userId!)
 	}
 
@@ -48,13 +48,13 @@ export default class CourseController {
 
 	@Get('/session/:session')
 	@UseGuards(CourseSessionGuard.param('session'))
-	getSessionInfo(@Param('session', ParseIntPipe) session: number) {
+	async getSessionInfo(@Param('session', ParseIntPipe) session: number) {
 		return this.svc.getSessionDetail(session)
 	}
 
 	@Get('/session/:session/materials')
 	@UseGuards(CourseSessionGuard.param('session'))
-	getSession(@Param('session', ParseIntPipe) session: number) {
+	async getSession(@Param('session', ParseIntPipe) session: number) {
 		return this.svc.getSessionMaterials(session)
 	}
 }

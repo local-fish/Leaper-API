@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common'
 
 @Injectable()
 export default class UserProvider {
-	getInfo(userId: number) {
+	async getInfo(userId: number) {
 		return db.user.findFirst({
 			select: { id: true, email: true, name: true, role: true },
 			where: { id: userId }

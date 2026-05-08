@@ -9,7 +9,7 @@ export default class UserController {
 	constructor(private svc: UserProvider) {}
 
 	@Get('/user/info')
-	getUserInfo(@Request() req: App.Request) {
+	async getUserInfo(@Request() req: App.Request) {
 		return this.svc.getInfo(req.userId!)
 	}
 }
