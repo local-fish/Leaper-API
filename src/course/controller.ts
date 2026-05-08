@@ -18,9 +18,7 @@ export default class CourseController {
 	@Get('/course/:id')
 	@UseGuards(CourseGuard.param('id'))
 	async getInfo(@Param('id') id: number) {
-		const course = await this.svc.getInfo(id)
-		if (course) return course
-		throw new NotFoundException()
+		return this.svc.getInfo(id)
 	}
 
 	@Get('/course/:id/students')
