@@ -1,4 +1,4 @@
-import { Controller, UseGuards, Get, Request } from "@nestjs/common";
+import { Controller, UseGuards, Get, Request, NotFoundException } from "@nestjs/common";
 import AuthGuard from "./authguard";
 import UserProvider from "./provider";
 import type App from "#common/app";
@@ -10,6 +10,8 @@ export default class UserController {
 
 	@Get('/user/info')
 	async getUserInfo(@Request() req: App.Request) {
-		return this.svc.getInfo(req.userId!)
+		const info = this.svc.getInfo(req.userId!)
+		if (info) return info
+		throw new NotFoundException()
 	}
 }
