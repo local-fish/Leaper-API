@@ -1,4 +1,4 @@
-import { Controller, UseGuards, Get, Request, Param, ParseIntPipe, NotFoundException, Req } from "@nestjs/common";
+import { Controller, UseGuards, Get, Request, Param, NotFoundException, Req } from "@nestjs/common";
 import CourseProvider from "./provider";
 import AuthGuard from "#user/authguard";
 import type App from "#common/app";
@@ -17,7 +17,7 @@ export default class CourseController {
 
 	@Get('/course/:id')
 	@UseGuards(CourseGuard.param('id'))
-	async getInfo(@Param('id', ParseIntPipe) id: number) {
+	async getInfo(@Param('id') id: number) {
 		const course = await this.svc.getInfo(id)
 		if (course) return course
 		throw new NotFoundException()
@@ -25,19 +25,19 @@ export default class CourseController {
 
 	@Get('/course/:id/students')
 	@UseGuards(CourseGuard.param('id'))
-	async getStudents(@Param('id', ParseIntPipe) id: number) {
+	async getStudents(@Param('id') id: number) {
 		return this.svc.getUsers(id)
 	}
 
 	@Get('/course/:id/sessions')
 	@UseGuards(CourseGuard.param('id'))
-	async getSessions(@Param('id', ParseIntPipe) id: number) {
+	async getSessions(@Param('id') id: number) {
 		return this.svc.getSessions(id)
 	}
 
 	@Get('/course/:id/grades')
 	@UseGuards(CourseGuard.param('id'))
-	async getGrades(@Request() req: App.Request, @Param('id', ParseIntPipe) id: number) {
+	async getGrades(@Request() req: App.Request, @Param('id') id: number) {
 		return this.svc.getUserGradesCourse(id, req.userId!)
 	}
 
@@ -48,13 +48,13 @@ export default class CourseController {
 
 	@Get('/session/:session')
 	@UseGuards(CourseSessionGuard.param('session'))
-	async getSessionInfo(@Param('session', ParseIntPipe) session: number) {
+	async getSessionInfo(@Param('session') session: number) {
 		return this.svc.getSessionDetail(session)
 	}
 
 	@Get('/session/:session/materials')
 	@UseGuards(CourseSessionGuard.param('session'))
-	async getSession(@Param('session', ParseIntPipe) session: number) {
+	async getSession(@Param('session') session: number) {
 		return this.svc.getSessionMaterials(session)
 	}
 }
