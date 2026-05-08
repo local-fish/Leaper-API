@@ -1,4 +1,4 @@
-import { Controller, UseGuards, Get, Request, Param, NotFoundException, Req } from "@nestjs/common";
+import { Controller, UseGuards, Get, Request, Param } from "@nestjs/common";
 import CourseProvider from "./provider";
 import AuthGuard from "#user/authguard";
 import type App from "#common/app";

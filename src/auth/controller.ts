@@ -1,5 +1,5 @@
 import AuthProvider from "./provider";
-import { Body, Controller, HttpCode, HttpException, Post, UnauthorizedException } from "@nestjs/common";
+import { Body, Controller, HttpCode, Post, UnauthorizedException } from "@nestjs/common";
 import { IsString } from "class-validator";
 
 export class LoginBody {
