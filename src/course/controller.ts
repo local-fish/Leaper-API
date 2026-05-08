@@ -3,7 +3,6 @@ import CourseProvider from "./provider";
 import AuthGuard from "#user/authguard";
 import type App from "#common/app";
 import CourseGuard from "./guard";
-import CourseSessionGuard from "./sessionguard";
 
 @Controller()
 @UseGuards(AuthGuard)
@@ -45,13 +44,13 @@ export default class CourseController {
 	}
 
 	@Get('/session/:session')
-	@UseGuards(CourseSessionGuard.param('session'))
+	@UseGuards(CourseGuard.Session.param('session'))
 	async getSessionInfo(@Param('session') session: number) {
 		return this.svc.getSessionDetail(session)
 	}
 
 	@Get('/session/:session/materials')
-	@UseGuards(CourseSessionGuard.param('session'))
+	@UseGuards(CourseGuard.Session.param('session'))
 	async getSession(@Param('session') session: number) {
 		return this.svc.getSessionMaterials(session)
 	}

@@ -1,5 +1,7 @@
 import type App from "#common/app";
-import { CanActivate, ExecutionContext, InternalServerErrorException, NotFoundException, UnauthorizedException } from "@nestjs/common"
+import { CanActivate, ExecutionContext, NotFoundException, UnauthorizedException } from "@nestjs/common"
+
+const paramCaches = new WeakMap<any, Map<string, any>>()
 
 abstract class IdAuthGuard<X> implements CanActivate {
 	static create<T extends typeof IdAuthGuard<any>, V = T extends typeof IdAuthGuard<infer R> ? R : any>(this: T, getId: IdAuthGuard.IdGetter<V>): Constructable<T> {
@@ -14,7 +16,12 @@ abstract class IdAuthGuard<X> implements CanActivate {
 	descriptor = '?'
 
 	static param<T extends typeof IdAuthGuard<any>, V = T extends typeof IdAuthGuard<infer R> ? R : any>(this: T, id: string, cast: (v: string) => V): Constructable<T> {
-		return this.create(req => cast(req.params[id] as string))
+		let obj = paramCaches.get(this)
+		if (!obj) paramCaches.set(this, obj = new Map())
+		let param = obj.get(id)
+		if (!param) obj.set(id, param = this.create(req => cast(req.params[id] as string)))
+
+		return param
 	}
 
 	async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -38,9 +45,20 @@ abstract class IdAuthGuard<X> implements CanActivate {
 	protected abstract getId: IdAuthGuard.IdGetter<X>
 }
 
-
 namespace IdAuthGuard {
 	export type IdGetter<X> = (req: App.Request) => X | Promise<X>
+
+	export abstract class Num extends IdAuthGuard<number|void> {
+		static param<T extends typeof IdAuthGuard<number|void>>(this: T, id: string): Constructable<T> {
+			return super.param.call(this, id, Number)
+		}
+
+		protected async validate(req: App.Request, userId: number, id: number|void) {
+			return id != undefined && id == id && this.validateNum(req, userId, id)
+		}
+
+		protected abstract validateNum(req: App.Request, userId: number, id: number|void): boolean | Promise<boolean>
+	}
 }
 
 export default IdAuthGuard

@@ -4,15 +4,25 @@ import CourseProvider from "./provider";
 import IdAuthGuard from "#common/idauth";
 
 @Injectable()
-export default abstract class CourseGuard extends IdAuthGuard<number|void> {
-	static param<T extends typeof IdAuthGuard<number|void>>(this: T, id: string): Constructable<T> {
-		return this.create(req => +req.params[id])
-	}
-
+abstract class CourseGuard extends IdAuthGuard.Num {
 	constructor(private courseSvc: CourseProvider) { super() }
 	descriptor = 'Course'
 
-	protected async validate(req: App.Request, userId: number, courseId: number|void) {
-		return courseId != undefined && courseId == courseId && await this.courseSvc.hasUser(courseId, userId)
+	protected async validateNum(req: App.Request, userId: number, courseId: number) {
+		return this.courseSvc.hasUser(courseId, userId)
 	}
 }
+
+namespace CourseGuard {
+	@Injectable()
+	export abstract class Session extends IdAuthGuard.Num {
+		constructor(private courseSvc: CourseProvider) { super() }
+		descriptor = 'CourseSession'
+
+		protected async validateNum(req: App.Request, userId: number, sessionId: number) {
+			return this.courseSvc.sessionHasUser(sessionId, userId)
+		}
+	}
+}
+
+export default CourseGuard
