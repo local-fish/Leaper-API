@@ -117,7 +117,7 @@ export default class ForumController {
 	@Post('/forum/new')
 	@UseGuards(CourseGuard.create(req => req.body.courseId))
 	async createForum(@Request() req: App.Request, @Body() opts: ForumControllerOpts.ForumCreate) {
-		await this.svc.create({
+		return this.svc.create({
 			body: opts.body,
 			courseId: opts.courseId,
 			title: opts.title,
@@ -128,7 +128,7 @@ export default class ForumController {
 	@Post('/forum/comment/new')
 	@UseGuards(ForumGuard.create(req => req.body.forumId))
 	async createForumComment(@Request() req: App.Request, @Body() opts: ForumControllerOpts.CommentCreate) {
-		await this.svc.createComment({
+		return this.svc.createComment({
 			body: opts.body,
 			forumId: opts.forumId,
 			parentId: opts.parentId,
