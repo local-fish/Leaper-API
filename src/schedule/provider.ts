@@ -52,4 +52,18 @@ export default class ScheduleProvider {
 		// currently only courses, custom schedule (like exam) is todo
 		return this.getUserCourseSchedule(opts)
 	}
+
+  async getUpcomingSession(userId: number) {
+    const now = new Date()
+    const end = new Date();
+    end.setMonth(end.getMonth() + 1);
+
+    const sessions = await this.getUserCourseSchedule({
+      userId,
+      startTime: now,
+      endTime: end
+    })
+
+    return sessions[0] ?? null
+  }
 }

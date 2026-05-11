@@ -29,4 +29,9 @@ export default class ScheduleController {
 			endTime: params.endTime
 		})
 	}
+
+  @Get('/schedule/upcoming')
+  async getNextSchedule(@Request() req: App.Request) {
+    return this.svc.getUpcomingSession(req.userId!)
+  }
 }
