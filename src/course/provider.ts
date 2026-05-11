@@ -53,7 +53,7 @@ export default class CourseProvider {
 			courseId: v.id,
 			courseName: v.name,
 			components: v.gradesComp.map(v => ({
-				name: v.name,
+				component: v.name,
 				grade: v.grades[0]?.grade
 			}))
 		}))
