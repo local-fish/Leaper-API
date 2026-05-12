@@ -26,6 +26,7 @@
   },
   "imports": {
     "#prisma/*": "./prisma/generated/*.js",
+     "#common/*": "./src/common/*.js",
     "#*": "./src/*.js"
   },
   "version": "deploy"
