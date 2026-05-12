@@ -1,7 +1,7 @@
 {
   "type": "module",
 	"scripts": {
-    "build": "bun build src/main.ts --outdir dist --target node --config bunfig.toml",
+    "build": "bun build src/main.ts --outdir dist --target node --config bunfig.toml --external @nestjs/microservices --external @nestjs/websockets --external class-transformer",
 		"start": "bun src/main.ts"
 	},
 	"devDependencies": {
