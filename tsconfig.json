@@ -1,10 +1,10 @@
 {
 	"compilerOptions": {
 		"lib": ["ESNext"],
-    "rootDir": "./",
 
-		"module": "esnext",
-		"moduleResolution": "bundler",
+    "rootDirs": ["src", "prisma"],
+		"module": "commonjs",
+		"moduleResolution": "node",
 		"allowSyntheticDefaultImports": true,
 		"esModuleInterop": true,
 		"isolatedModules": true,
@@ -26,8 +26,8 @@
 
 		"paths": {
 			"#prisma/*": ["./prisma/generated/*"],
-			"#*": ["./src/*"],
       "#common/*": ["./src/common/*"],
+			"#*": ["./src/*"]
 		}
 	},
 	"include": ["src", "dbtest", "prisma/generated"]

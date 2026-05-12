@@ -1,5 +1,4 @@
 {
-  "type": "module",
   "scripts": {
     "start": "bun src/main.ts",
     "build": "bunx prisma generate && bunx @nestjs/cli build"
@@ -8,7 +7,9 @@
     "@types/express": "^5.0.6",
     "@types/node": "^25.6.0",
     "prisma": "^7.8.0",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "@nestjs/cli": "^10.0.0",
+    "@nestjs/schematics": "^10.0.0"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
@@ -25,9 +26,9 @@
     "rxjs": "^7.8.1"
   },
   "imports": {
-    "#prisma/*": "./prisma/generated/*.js",
-     "#common/*": "./src/common/*.js",
-    "#*": "./src/*.js"
+    "#prisma/*": "./prisma/generated/*",
+    "#common/*": "./src/common/*",
+    "#*": "./src/*"
   },
   "version": "deploy"
 }
