@@ -1,15 +1,12 @@
 import db from "#common/db";
 import { Injectable } from "@nestjs/common";
-
-export interface ScheduleQueryOptions {
-	userId: number
-	startTime: DateType,
-	endTime: DateType
-}
+import { ApiProperty } from "@nestjs/swagger";
+import { Type } from "class-transformer";
+import { IsDate } from "class-validator";
 
 @Injectable()
-export default class ScheduleProvider {
-	async getUserCourseSchedule(opts: ScheduleQueryOptions) {
+class ScheduleProvider {
+	async getUserCourseSchedule(opts: ScheduleProvider.QueryOptions) {
 		const startTime = new Date(opts.startTime)
 		const endTime = new Date(opts.endTime)
 
@@ -36,19 +33,23 @@ export default class ScheduleProvider {
 			where: { users: { some: { id: opts.userId } } },
 		})
 
-		return q.flatMap(v => v.sessions.map(s => ({
-			type: 'course',
-			courseId: v.id,
-			courseName: v.name,
-			sessionId: s.id,
-			sessionName: s.topic,
-			startTime: s.startTime,
-			endTime: s.endTime,
-			location: s.location,
-		}))).sort(({startTime: a}, {startTime: b}) => a.getTime() - b.getTime())
+		return q.flatMap(v =>
+			v.sessions.map(s => ({
+				type: 'course',
+				courseId: v.id,
+				courseName: v.name,
+				sessionId: s.id,
+				sessionName: s.topic,
+				startTime: s.startTime,
+				endTime: s.endTime,
+				location: s.location,
+			}) as ScheduleProvider.QueryResponse
+		)).sort(
+			({startTime: a}, {startTime: b}) => a.getTime() - b.getTime()
+		)
 	}
 
-	async getUserSchedule(opts: ScheduleQueryOptions) {
+	async getUserSchedule(opts: ScheduleProvider.QueryOptions) {
 		// currently only courses, custom schedule (like exam) is todo
 		return this.getUserCourseSchedule(opts)
 	}
@@ -67,3 +68,41 @@ export default class ScheduleProvider {
     return sessions[0] ?? null
   }
 }
+
+namespace ScheduleProvider {
+	export class QueryOptions {
+		declare userId: number
+
+		@Type(() => Date)
+		@IsDate()
+		@ApiProperty({ type: Date })
+		@ApiProperty({ type: Date })
+		declare startTime: DateType
+
+		@Type(() => Date)
+		@IsDate()
+		@ApiProperty({ type: Date })
+		@ApiProperty({ type: Date })
+		declare endTime: DateType
+	}
+	export class QueryResponse {
+		@ApiProperty({ type: 'string' })
+		declare type: string
+		@ApiProperty({ type: 'number' })
+		declare courseId: number
+		@ApiProperty({ type: 'string' })
+		declare courseName: string
+		@ApiProperty({ type: 'number' })
+		declare sessionId: number
+		@ApiProperty({ type: 'string' })
+		declare sessionName: string
+		@ApiProperty({ type: Date })
+		declare startTime: Date
+		@ApiProperty({ type: Date })
+		declare endTime: Date
+		@ApiProperty({ type: 'string' })
+		declare location: string
+	}
+}
+
+export default ScheduleProvider

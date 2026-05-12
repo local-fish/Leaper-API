@@ -1,9 +1,11 @@
 import db from '#common/db'
+import UserProvider from '#user/provider'
 import { Injectable } from '@nestjs/common'
+import { ApiProperty } from '@nestjs/swagger'
 
 @Injectable()
-export default class CourseProvider {
-	async getCoursesFromUser(userid: number) {
+class CourseProvider {
+	async getCoursesFromUser(userid: number): Promise<CourseProvider.CourseHeader[]> {
 		return db.course.findMany({
 			select: { id: true, name: true },
 			where: { users: { some: { id: userid } } }
@@ -17,21 +19,21 @@ export default class CourseProvider {
 		})
 	}
 
-	async getInfo(courseId: number) {
+	async getInfo(courseId: number): Promise<CourseProvider.Course | null> {
 		return db.course.findFirst({
 			select: { id: true, name: true },
 			where: { id: courseId }
 		})
 	}
 
-	async getUsers(courseId: number) {
+	async getUsers(courseId: number): Promise<UserProvider.UserInfo[]> {
 		return db.user.findMany({
 			select: { id: true, name: true, email: true, role: true },
 			where: { courses: { some: { id: courseId } } }
 		})
 	}
 
-	async getUserGrades(userId: number) {
+	async getUserGrades(userId: number): Promise<CourseProvider.CourseGrade[]> {
 		const r = await db.course.findMany({
 			select: {
 				id: true,
@@ -59,7 +61,7 @@ export default class CourseProvider {
 		}))
 	}
 
-	async getUserGradesCourse(courseId: number, userId: number) {
+	async getUserGradesCourse(courseId: number, userId: number): Promise<CourseProvider.Grade[]> {
 		const q = await db.courseGradeComp.findMany({
 			select: {
 				name: true,
@@ -73,7 +75,7 @@ export default class CourseProvider {
 		return q.map(v => ({ component: v.name, grade: v.grades[0]?.grade })) ?? []
 	}
 
-	async getSessions(courseId: number) {
+	async getSessions(courseId: number): Promise<CourseProvider.SessionHeader[]> {
 		return db.courseSession.findMany({
 			select: {
 				topic: true,
@@ -94,7 +96,7 @@ export default class CourseProvider {
 		})
 	}
 
-	async getSessionDetail(sessionId: number) {
+	async getSessionDetail(sessionId: number): Promise<CourseProvider.Session | null> {
 		return db.courseSession.findFirst({
 			select: {
 				courseId: true,
@@ -109,6 +111,7 @@ export default class CourseProvider {
 		})
 	}
 
+	// TODO: document file
 	async getSessionMaterials(sessionId: number) {
 		const files = await db.file.findMany({
 			select: { name: true, size: true, hash: true },
@@ -117,5 +120,54 @@ export default class CourseProvider {
 		return files.map(v => ({ ...v, hash: Buffer.from(v.hash).toString('base64url') }))
 	}
 }
+
+namespace CourseProvider {
+	export class CourseHeader {
+		@ApiProperty({ type: 'number' })
+		declare id: number
+		@ApiProperty({ type: 'string' })
+		declare name: string
+	}
+
+	export class Course extends CourseHeader {}
+
+	export class Grade {
+		@ApiProperty({ type: 'string' })
+		declare component: string
+		@ApiProperty({ type: 'number', required: false })
+		declare grade?: number
+	}
+
+	export class CourseGrade {
+		@ApiProperty({ type: 'number' })
+		declare courseId: number
+		@ApiProperty({ type: 'string' })
+		declare courseName: string
+		@ApiProperty({ type: [Grade] })
+		declare components: Grade[]
+	}
+
+	export class SessionHeader {
+		@ApiProperty({ type: 'number' })
+		declare id: number
+		@ApiProperty({ type: 'number' })
+		declare sessionNo: number
+		@ApiProperty({ type: Date })
+		declare startTime: Date
+		@ApiProperty({ type: Date })
+		declare endTime: Date
+		@ApiProperty({ type: 'string' })
+		declare location: string
+		@ApiProperty({ type: 'string' })
+		declare topic: string
+	}
+
+	export class Session extends SessionHeader {
+		@ApiProperty({ type: 'number' })
+		declare courseId: number
+	}
+}
+
+export default CourseProvider
 
 export const courseProvider = new CourseProvider()

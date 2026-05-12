@@ -17,6 +17,7 @@ const swaggerDoc = new DocumentBuilder()
 	.setTitle('thingy')
 	.setDescription('thing')
 	.setVersion('1.0.0')
+	.addBearerAuth()
 	.build()
 
 SwaggerModule.setup('swagger', app, () => SwaggerModule.createDocument(app, swaggerDoc))
