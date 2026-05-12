@@ -70,7 +70,7 @@ export default class CourseProvider {
 			},
 			where: { courseId: courseId }
 		})
-		return q.map(v => ({ name: v.name, grade: v.grades[0]?.grade })) ?? []
+		return q.map(v => ({ component: v.name, grade: v.grades[0]?.grade })) ?? []
 	}
 
 	async getSessions(courseId: number) {
