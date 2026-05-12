@@ -1,6 +1,6 @@
-import db from "#common/db";
-import { ForumCommentUpdateManyMutationInput, ForumUpdateManyMutationInput } from "#prisma/models";
-import UserProvider from "#user/provider";
+import db from "../common/db";
+import { ForumCommentUpdateManyMutationInput, ForumUpdateManyMutationInput } from "../../prisma/generated/models";
+import UserProvider from "../user/provider";
 import { Injectable } from "@nestjs/common";
 import { ApiProperty } from "@nestjs/swagger";
 import { IsNumber, IsOptional, IsString, MaxLength } from "class-validator";

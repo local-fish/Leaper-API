@@ -1,4 +1,4 @@
-import type App from "#common/app";
+import type App from "../common/app";
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from "@nestjs/common"
 import { JwtService } from "@nestjs/jwt"
 

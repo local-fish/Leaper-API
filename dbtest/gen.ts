@@ -1,6 +1,6 @@
-import db from "#common/db";
-import { authProvider } from "#auth/provider";
-import { Prisma } from "#prisma/client";
+import db from "../src/common/db";
+import { authProvider } from "../src/auth/provider";
+import { Prisma } from "../prisma/generated/client";
 if (!process.env.DEV) throw new Error('DEV must be set to true')
 
 const fileHashes = [

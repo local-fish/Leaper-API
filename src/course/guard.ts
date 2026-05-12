@@ -1,7 +1,7 @@
-import type App from "#common/app";
+import type App from "../common/app";
 import { Injectable } from "@nestjs/common"
 import CourseProvider from "./provider";
-import IdAuthGuard from "#common/idauth";
+import IdAuthGuard from "../common/idauth";
 
 @Injectable()
 abstract class CourseGuard extends IdAuthGuard.Num {

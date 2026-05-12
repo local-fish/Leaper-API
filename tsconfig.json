@@ -22,13 +22,8 @@
 		"baseUrl": "./",
 		"incremental": true,
 		"forceConsistentCasingInFileNames": true,
-		"strict": true,
+		"strict": true
 
-		"paths": {
-			"#prisma/*": ["./prisma/generated/*"],
-      "#common/*": ["./src/common/*"],
-			"#*": ["./src/*"]
-		}
 	},
 	"include": ["src", "dbtest", "prisma/generated"]
 }

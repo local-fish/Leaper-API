@@ -1,4 +1,4 @@
-import db from "#common/db";
+import db from "../common/db";
 import { Injectable } from "@nestjs/common";
 import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";

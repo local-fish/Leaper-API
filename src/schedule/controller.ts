@@ -1,8 +1,8 @@
 import { Controller, Get, UseGuards, Request, Param } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse } from "@nestjs/swagger";
-import AuthGuard from "#user/authguard";
+import AuthGuard from "../user/authguard";
 import ScheduleProvider from "./provider";
-import type App from "#common/app";
+import type App from "../common/app";
 
 @Controller()
 @ApiBearerAuth()

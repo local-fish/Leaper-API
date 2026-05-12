@@ -2,10 +2,10 @@ import { Controller, Get, Param, ParseIntPipe, UseGuards, Query, Patch, Body, De
 import { ApiBearerAuth, ApiProperty, ApiResponse } from "@nestjs/swagger";
 import { IsNumber, IsOptional, IsString, MaxLength } from "class-validator";
 import ForumProvider from "./provider";
-import CourseGuard from "#course/guard";
-import AuthGuard from "#user/authguard";
+import CourseGuard from "../course/guard";
+import AuthGuard from "../user/authguard";
 import ForumGuard from "./guard";
-import type App from "#common/app";
+import type App from "../common/app";
 
 export namespace ForumControllerSchema {
 	export class EditOptions {

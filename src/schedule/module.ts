@@ -1,6 +1,6 @@
 import { Module } from "@nestjs/common";
 import ScheduleController from "./controller";
-import AppJwt from "#common/jwt";
+import AppJwt from "../common/jwt";
 import ScheduleProvider from "./provider";
 
 @Module({

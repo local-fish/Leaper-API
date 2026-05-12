@@ -1,4 +1,4 @@
-import type App from "#common/app";
+import type App from "./app";
 import { CanActivate, ExecutionContext, NotFoundException, UnauthorizedException } from "@nestjs/common"
 
 const paramCaches = new WeakMap<any, Map<string, any>>()
