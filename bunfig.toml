@@ -1,5 +1,4 @@
 [build]
-conditions = ["bun"]
 external = [
   "@nestjs/microservices",
   "@nestjs/websockets",
