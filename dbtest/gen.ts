@@ -22,9 +22,9 @@ const fileHashes = [
 ]
 const fileHashesBuf = fileHashes.map(v => Buffer.from(v, 'hex'))
 
-const usersList = ['foo', 'bar', 'baz', 'qux', 'bob', 'jake', 'tom']
-const coursesList = ['compbio', 'compphys', 'reseaarch', 'database', 'datastruct', 'algoprog', 'linalg', 'mobile', 'refactoring']
-const gradeCompsList = ['mid', 'fin', 'asg', 'quiz', 'lab']
+const usersList = ['Bob', 'Jake', 'Tom']
+const coursesList = ['Biology', 'Physics', 'Chemistry', 'Database', 'Data Structures', 'Algorithms and Programming', 'Linear Algebra', 'Mobile Programming', 'Refactoring']
+const gradeCompsList = ['Midterm', 'Final', 'Assignment', 'Quiz', 'Lab']
 
 function randint(min: number, max: number) {
 	return min + Math.floor(Math.random() * (max-min))
