@@ -13,13 +13,16 @@ app.useGlobalPipes(new ValidationPipe({
 	transform: true
 }))
 
-const swaggerDoc = new DocumentBuilder()
-	.setTitle('Leaper')
-	.setVersion('1.0.0')
-	.addBearerAuth()
-	.build()
+if (process.env.DEV) {
+	const swaggerDoc = new DocumentBuilder()
+		.setTitle('Leaper')
+		.setVersion('1.0.0')
+		.addBearerAuth()
+		.build()
 
-SwaggerModule.setup('swagger', app, () => SwaggerModule.createDocument(app, swaggerDoc))
+	SwaggerModule.setup('swagger', app, () => SwaggerModule.createDocument(app, swaggerDoc))
+	console.log('Swagger applied')
+}
 
 await app.listen(process.env.PORT ?? 4000);
 console.log('Started on port', process.env.PORT ?? 4000)
