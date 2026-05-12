@@ -5,56 +5,68 @@ import CourseGuard from "#course/guard";
 import AuthGuard from "#user/authguard";
 import ForumGuard from "./guard";
 import type App from "#common/app";
+import { ApiProperty } from "@nestjs/swagger";
 
 export namespace ForumControllerOpts {
 	export class ForumCreate {
 		@IsNumber()
+		@ApiProperty({ type: 'number' })
 		declare courseId: number
 
 		@IsString()
 		@MaxLength(50)
+		@ApiProperty({ type: 'string', maxLength: 50 })
 		declare title: string
 
 		@IsString()
 		@MaxLength(4000)
+		@ApiProperty({ type: 'string', maxLength: 4000 })
 		declare body: string
 	}
 
 	export class CommentCreate {
 		@IsNumber()
+		@ApiProperty({ type: 'number' })
 		declare forumId: number
 
 		@IsOptional()
 		@IsNumber()
+		@ApiProperty({ type: 'number', required: false })
 		declare parentId: number
 
 		@IsString()
 		@MaxLength(4000)
+		@ApiProperty({ type: 'string', maxLength: 4000 })
 		declare body: string
 	}
 
 	export class ForumEdit {
 		@IsNumber()
+		@ApiProperty({ type: 'number' })
 		declare id: number
 
 		@IsOptional()
 		@IsString()
 		@MaxLength(50)
+		@ApiProperty({ type: 'string', maxLength: 50, required: false })
 		title?: string
 
 		@IsOptional()
 		@IsString()
 		@MaxLength(4000)
+		@ApiProperty({ type: 'string', maxLength: 4000, required: false })
 		body?: string
 	}
 
 	export class CommentEdit {
 		@IsNumber()
+		@ApiProperty({ type: 'number' })
 		declare id: number
 
 		@IsOptional()
 		@IsString()
 		@MaxLength(4000)
+		@ApiProperty({ type: 'string', maxLength: 4000, required: false })
 		body?: string
 	}
 }

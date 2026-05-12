@@ -4,14 +4,17 @@ import ScheduleProvider from "./provider";
 import type App from "#common/app";
 import { IsDate } from "class-validator";
 import { Type } from "class-transformer";
+import { ApiProperty } from "@nestjs/swagger";
 
 export class ScheduleQueryDto {
 	@Type(() => Date)
 	@IsDate()
+	@ApiProperty({ type: Date })
 	declare startTime: Date
 
 	@Type(() => Date)
 	@IsDate()
+	@ApiProperty({ type: Date })
 	declare endTime: Date
 }
 

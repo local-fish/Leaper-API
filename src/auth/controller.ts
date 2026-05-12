@@ -1,11 +1,15 @@
 import AuthProvider from "./provider";
 import { Body, Controller, HttpCode, Post, UnauthorizedException } from "@nestjs/common";
+import { ApiProperty } from "@nestjs/swagger";
 import { IsString } from "class-validator";
 
 export class LoginBody {
 	@IsString()
+	@ApiProperty({ type: 'string' })
 	declare username: string
+
 	@IsString()
+	@ApiProperty({ type: 'string' })
 	declare password: string
 }
 

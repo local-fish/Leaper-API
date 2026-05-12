@@ -2,6 +2,7 @@ import 'dotenv/config'
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import App from '#common/app';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 if (process.env.DEV) console.warn('Running in development mode')
 
@@ -11,4 +12,14 @@ app.useGlobalPipes(new ValidationPipe({
 	forbidNonWhitelisted: true,
 	transform: true
 }))
+
+const swaggerDoc = new DocumentBuilder()
+	.setTitle('thingy')
+	.setDescription('thing')
+	.setVersion('1.0.0')
+	.build()
+
+SwaggerModule.setup('swagger', app, () => SwaggerModule.createDocument(app, swaggerDoc))
+
 await app.listen(process.env.PORT ?? 4000);
+console.log('Started on port', process.env.PORT ?? 4000)
