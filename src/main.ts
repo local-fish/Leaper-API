@@ -24,5 +24,5 @@ if (process.env.DEV) {
 	console.log('Swagger applied')
 }
 
-await app.listen(process.env.PORT ?? 4000);
-console.log('Started on port', process.env.PORT ?? 4000)
+await app.listen(process.env.PORT ?? 3000);
+console.log('Started on port', process.env.PORT ?? 3000)
