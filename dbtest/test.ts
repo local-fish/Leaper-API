@@ -25,7 +25,7 @@ for (const {id: userid} of users) {
 		for (const courseInfo of courses) {
 			console.log(' - ' + formatCourse(courseInfo))
 			const gradesInfo = await courseProvider.getUserGradesCourse(courseInfo.id, userid)
-			console.log('    - scores:', gradesInfo.map(v => `${v.name.padStart(5)}: ${String(v.grade ?? '-').padEnd(3)}`).join('; '))
+			console.log('    - scores:', gradesInfo.map(v => `${v.component.padStart(5)}: ${String(v.grade ?? '-').padEnd(3)}`).join('; '))
 		}
 	}
 	console.log()
