@@ -3,10 +3,8 @@
 		"lib": ["ESNext"],
 
 		"module": "esnext",
-		"moduleResolution": "node",
+		"moduleResolution": "bundler",
 		"allowSyntheticDefaultImports": true,
-		"esModuleInterop": true,
-		"isolatedModules": true,
 
 		"target": "esnext",
 		"outDir": "./dist",
@@ -18,7 +16,6 @@
 		"experimentalDecorators": true,
 
 		"skipLibCheck": true,
-		"baseUrl": "./",
 		"incremental": true,
 		"forceConsistentCasingInFileNames": true,
 		"strict": true
