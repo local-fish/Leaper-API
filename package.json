@@ -1,7 +1,7 @@
 {
   "type": "module",
 	"scripts": {
-    "build": "tsc",
+    "build": "tsc --project tsconfig.build.json",
 		"start": "bun src/main.ts"
 	},
 	"devDependencies": {

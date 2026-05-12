@@ -2,6 +2,7 @@
 	"compilerOptions": {
 		"lib": ["ESNext"],
     "rootDir": "./",
+    "baseUrl": "./",
 
 		"module": "esnext",
 		"moduleResolution": "bundler",
