@@ -14,8 +14,7 @@ app.useGlobalPipes(new ValidationPipe({
 }))
 
 const swaggerDoc = new DocumentBuilder()
-	.setTitle('thingy')
-	.setDescription('thing')
+	.setTitle('Leaper')
 	.setVersion('1.0.0')
 	.addBearerAuth()
 	.build()
