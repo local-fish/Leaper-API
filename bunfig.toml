@@ -1,0 +1,11 @@
+[build]
+conditions = ["bun"]
+external = [
+  "@nestjs/microservices",
+  "@nestjs/websockets",
+  "class-transformer",
+]
+
+[build.alias]
+"#prisma" = "./prisma/generated"
+"#" = "./src"
