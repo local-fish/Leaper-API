@@ -20,7 +20,7 @@ Todo:
 1. Install dependencies: `bun i`
 
 2. Configure database: `cp .env.example .env` 
-    Note: it is also required to setup a MySQL Database and the appropriate configuration in .env 
+Note: it is also required to setup a MySQL Database and the appropriate configuration in .env 
 
 3. Generate database: `bun prisma generate && bun prisma db push`
 
