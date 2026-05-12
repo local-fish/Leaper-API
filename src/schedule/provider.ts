@@ -75,14 +75,12 @@ namespace ScheduleProvider {
 
 		@Type(() => Date)
 		@IsDate()
-		@ApiProperty({ type: Date })
-		@ApiProperty({ type: Date })
+		@ApiProperty({ type: Date, default: '2026-01-01' })
 		declare startTime: DateType
 
 		@Type(() => Date)
 		@IsDate()
-		@ApiProperty({ type: Date })
-		@ApiProperty({ type: Date })
+		@ApiProperty({ type: Date, default: '2026-12-31' })
 		declare endTime: DateType
 	}
 	export class QueryResponse {

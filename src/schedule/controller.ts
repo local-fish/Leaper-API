@@ -1,5 +1,5 @@
 import { Controller, Get, UseGuards, Request, Param } from "@nestjs/common";
-import { ApiBearerAuth, ApiResponse } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiResponse } from "@nestjs/swagger";
 import AuthGuard from "#user/authguard";
 import ScheduleProvider from "./provider";
 import type App from "#common/app";
@@ -12,6 +12,10 @@ export default class ScheduleController {
 
 	// Note: TZ will use the host's TZ offset
 	@Get('/schedule/:startTime/:endTime')
+	@ApiOperation({
+		description: 'Specified `startTime` and `endTime` should use the UTC timezone, otherwise the host timezone will be used.'
+			+ '\n\nTimezones may be adjusted within the request (e.g. GMT+7: `2026-01-02T00:00` -> `2026-01-01T17:00Z`)',
+	})
 	@ApiResponse({ type: [ScheduleProvider.QueryResponse] })
 	async getSchedule(@Request() req: App.Request, @Param() params: ScheduleProvider.QueryOptions) {
 		return this.svc.getUserSchedule({
