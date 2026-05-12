@@ -1,7 +1,7 @@
 {
   "type": "module",
 	"scripts": {
-    "build": "bun build src/main.ts --outdir dist --target node --external @nestjs/microservices --external @nestjs/websockets --external class-transformer --alias #prisma/client:./prisma/generated/client.ts --alias #prisma/models:./prisma/generated/models.ts",
+    "build": "bunx prisma generate && bun build src/main.ts --outdir dist --target node --external @nestjs/microservices --external @nestjs/websockets --external class-transformer --alias #prisma/client:./prisma/generated/client.ts --alias #prisma/models:./prisma/generated/models.ts",
 		"start": "bun src/main.ts"
 	},
 	"devDependencies": {
