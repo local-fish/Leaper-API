@@ -1,6 +1,6 @@
-import type App from "#common/app";
+import type App from "../common/app";
 import { Injectable } from "@nestjs/common"
-import IdAuthGuard from "#common/idauth";
+import IdAuthGuard from "../common/idauth";
 import ForumProvider from "./provider";
 
 @Injectable()

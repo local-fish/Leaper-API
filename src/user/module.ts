@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
 import UserController from "./controller";
 import UserProvider from "./provider";
-import AppJwt from "#common/jwt";
+import AppJwt from "../common/jwt";
 
 @Module({
 	imports: [AppJwt],

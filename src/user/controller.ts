@@ -2,7 +2,7 @@ import { Controller, UseGuards, Get, Request, NotFoundException } from "@nestjs/
 import { ApiBearerAuth, ApiResponse } from "@nestjs/swagger";
 import AuthGuard from "./authguard";
 import UserProvider from "./provider";
-import type App from "#common/app";
+import type App from "../common/app";
 
 @Controller()
 @ApiBearerAuth()

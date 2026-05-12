@@ -1,7 +1,7 @@
 import 'dotenv/config'
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
-import App from '#common/app';
+import App from './common/app';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 if (process.env.DEV) console.warn('Running in development mode')

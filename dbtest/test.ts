@@ -1,7 +1,7 @@
-import db from "#common/db";
-import { courseProvider } from "#course/provider";
-import { forumProvider } from "#forum/provider";
-import { userProvider as user } from "#user/provider";
+import db from "../src/common/db";
+import { courseProvider } from "../src/course/provider";
+import { forumProvider } from "../src/forum/provider";
+import { userProvider as user } from "../src/user/provider";
 if (!process.env.DEV) throw new Error('DEV must be set to true')
 
 function formatUser(user: any) {

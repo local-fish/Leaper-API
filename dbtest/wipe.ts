@@ -1,4 +1,4 @@
-import db from "#common/db";
+import db from "../src/common/db";
 if (!process.env.DEV) throw new Error('DEV must be set to true')
 
 

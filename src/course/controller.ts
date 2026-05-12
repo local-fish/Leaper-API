@@ -1,10 +1,10 @@
 import { Controller, UseGuards, Get, Request, Param } from "@nestjs/common";
 import CourseProvider from "./provider";
-import AuthGuard from "#user/authguard";
+import AuthGuard from "../user/authguard";
 import CourseGuard from "./guard";
 import { ApiBearerAuth, ApiResponse } from "@nestjs/swagger";
-import type App from "#common/app";
-import UserProvider from "#user/provider";
+import type App from "../common/app";
+import UserProvider from "../user/provider";
 
 @Controller()
 @ApiBearerAuth()

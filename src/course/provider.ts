@@ -1,5 +1,5 @@
-import db from '#common/db'
-import UserProvider from '#user/provider'
+import db from '../common/db'
+import UserProvider from '../user/provider'
 import { Injectable } from '@nestjs/common'
 import { ApiProperty } from '@nestjs/swagger'
 
