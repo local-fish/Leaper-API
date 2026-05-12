@@ -1,7 +1,7 @@
 {
   "type": "module",
 	"scripts": {
-    "build": "bun build src/main.ts --outdir dist --target node",
+    "build": "bun build src/main.ts --outdir dist --target node --config bunfig.toml",
 		"start": "bun src/main.ts"
 	},
 	"devDependencies": {
