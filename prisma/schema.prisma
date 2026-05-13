@@ -21,6 +21,7 @@ model User {
 	forumComments ForumComment[]
 	assessmentGrades AssessmentGrade[]
 	assessmentSubmissions AssessmentSubmission[]
+	files File[]
 }
 
 model Course {
@@ -98,11 +99,17 @@ model ForumComment {
 }
 
 model File {
-	hash Bytes @db.Binary(32) @id
+	id String @id
 	name String
+	userId Int
 	size Int
+	gcCluster Int @db.TinyInt
+
+	owner User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
 	courseSessions CourseSession[]
+
+	@@index([gcCluster])
 }
 
 model Assessment {
