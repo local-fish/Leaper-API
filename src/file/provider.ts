@@ -75,6 +75,14 @@ class FileProvider {
 	async get(key: string) {
 		return this.s3.get(key)
 	}
+
+	async head(key: string) {
+		return this.s3.head(key)
+	}
+
+	async getPresign(key: string) {
+		return this.s3.getPresign(undefined, key)
+	}
 }
 
 namespace FileProvider {}
