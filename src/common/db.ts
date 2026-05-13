@@ -1,7 +1,6 @@
 import { PrismaMariaDb } from "@prisma/adapter-mariadb"
 import { PrismaClient } from "../../prisma/generated/client"
 import assert from "assert"
-
 import 'dotenv/config'
 
 assert(process.env.DATABASE_HOST, 'DATABASE_HOST not defined')
