@@ -14,7 +14,8 @@ model User {
 	role String
 	pwhash Bytes @db.Binary(32)
 
-	courses Course[]
+	courses Course[] @relation(name: "students")
+	coursesLecturings Course[] @relation(name: "lecturers")
 	courseGrades CourseGrade[]
 	forums Forum[]
 	forumComments ForumComment[]
@@ -26,7 +27,8 @@ model Course {
 	id Int @id @default(autoincrement())
 	name String
 
-	users User[]
+	users User[] @relation(name: "students")
+	lecturers User[] @relation(name: "lecturers")
 	sessions CourseSession[]
 	gradesComp CourseGradeComp[]
 	forums Forum[]
