@@ -6,10 +6,14 @@ import { ApiProperty } from '@nestjs/swagger'
 @Injectable()
 class CourseProvider {
 	async getCoursesFromUser(userid: number): Promise<CourseProvider.CourseHeader[]> {
-		return db.course.findMany({
-			select: { id: true, name: true },
+		const q = await db.course.findMany({
+			select: {
+				id: true, name: true,
+				_count: { select: { users: true, sessions: true } }
+			},
 			where: { users: { some: { id: userid } } }
 		})
+		return q.map(({ _count, ...course }): CourseProvider.CourseHeader => ({ ...course, studentCount: _count.users, sessionCount: _count.sessions }))
 	}
 
 	async hasUser(courseId: number, userId: number) {
@@ -19,11 +23,22 @@ class CourseProvider {
 		})
 	}
 
-	async getInfo(courseId: number): Promise<CourseProvider.Course | null> {
-		return db.course.findFirst({
-			select: { id: true, name: true },
+	async getInfo(courseId: number): Promise<CourseProvider.Course | undefined> {
+		const q = await db.course.findFirst({
+			select: {
+				id: true, name: true,
+				_count: { select: { users: true, sessions: true } }
+			},
 			where: { id: courseId }
 		})
+		if (!q) return
+		const {_count, ...course} = q
+		return {
+			...course,
+			sessionCount: _count.sessions,
+			studentCount: _count.users
+		}
+
 	}
 
 	async getUsers(courseId: number): Promise<UserProvider.UserInfo[]> {
@@ -127,6 +142,10 @@ namespace CourseProvider {
 		declare id: number
 		@ApiProperty({ type: 'string' })
 		declare name: string
+		@ApiProperty({ type: 'number' })
+		declare studentCount: number
+		@ApiProperty({ type: 'number' })
+		declare sessionCount: number
 	}
 
 	export class Course extends CourseHeader {}
