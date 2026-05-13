@@ -3,26 +3,25 @@ import { authProvider } from "../src/auth/provider";
 import { Prisma } from "../prisma/generated/client";
 if (!process.env.DEV) throw new Error('DEV must be set to true')
 
-const fileHashes = [
-	'1a06c32c286411ffc35910fcffd6a4be4ca2a8cb7bdf13c2f595c4f66a81e30b',
-	'1e6248e13edb956f554fd5ce6cbf71af882d876a8556cb973bc1a25cde67c077',
-	'e078768fa13fa74dc100700fbd2afbbe9d3dff0a5d4d2fe39296cbe0c0b0dc42',
-	'7d76297efd799d9c477ab9ab04b7a9ebb460ac6b6ac0dca067b199e8cdc43f82',
-	'd91b79b7d5bd8300aff5870d9c65cd75ba327c4f6187be361cd40a31619d01b9',
-	'2a627dfe0e3410a25b4fc8ae74406d1f8700dee8c851e08aa8917f0170858111',
-	'c8a0e2e18cb1cdae9c42d8c9391919dc4e9d17e581f935cab0e450af11a1b25d',
-	'b6d6c05af86bdfb0c6ff2eeb5933ee6dec4930fec761a41eca43bdd623eff029',
-	'ed5bde50ea0066e320143256867cfb25a1ea211e7dadbcdf09d8866e7f288102',
-	'659ee460e2878f55ff14612ead97c6376a934b73d91f806e0d3aa14879cf017c',
-	'8dc6b07d46822a575cb49a281647baf5db90fae65c800eb0cb6fd310379c47f8',
-	'ea252360da10d50f7bc2106fd5380f0cf7f4b37d506d462e83b3b3c2f4b09376',
-	'470c174ae4dfa88fcda952c90d3d2df67d39837f5e0e385a054f16d2eec35536',
-	'e524d362b6e6c4ea7c7e208599b56d9a951442f478b624e8cb355cc898eccb2e',
-	'6a0de28c036333e7964fbd8e0043730f388168ce575086af1abae694c125b441'
+const fileNames = [
+	'aaaaa',
+	'bbbbb',
+	'ccc',
+	'dd',
+	'gg',
+	'ee',
+	'hh',
+	'ffasada',
+	'jj',
+	'uu',
+	'eyhe',
+	'ii',
+	'jrthth',
+	'fafewrwqr',
+	'dfdgghrh'
 ]
-const fileHashesBuf = fileHashes.map(v => Buffer.from(v, 'hex'))
 
-const usersList = ['Bob', 'Jake', 'Tom']
+const usersList = ['Bob', 'Jake', 'Tom', 'john', 'kimmy', 'thomas', 'kenneth', 'abel', 'tommy', 'andrew', 'evan', 'charlie']
 const coursesList = ['Biology', 'Physics', 'Chemistry', 'Database', 'Data Structures', 'Algorithms and Programming', 'Linear Algebra', 'Mobile Programming', 'Refactoring']
 const gradeCompsList = ['Midterm', 'Final', 'Assignment', 'Quiz', 'Lab']
 
@@ -101,20 +100,22 @@ async function createCourses() {
 	})
 }
 async function createFiles() {
+	const users = await getUsers()
+
 	const files = await db.file.findMany({
-		select: { hash: true },
-		where: { hash: { in: fileHashesBuf } }
+		select: { id: true },
+		where: { id: { in: fileNames } }
 	})
-	const nonexist = new Map(fileHashes.map((v, i) => [v, i]))
-	for (const e of files) nonexist.delete(Buffer.from(e.hash).toString('hex'))
-	if (!nonexist.size) return
+	const nonexist = new Set(fileNames).difference(new Set(files))
 
 	console.log(`Files to create: ${Array.from(nonexist.values())}`)
 	await db.file.createMany({
-		data: Array.from(nonexist, ([hash, i]) => ({
-			hash: fileHashesBuf[i]!,
+		data: Array.from(nonexist, (name, i) => ({
+			id: name,
 			name: 'dummy'+i,
-			size: randint(1e5, 1e6)
+			size: randint(1e5, 1e6),
+			gcCluster: 0,
+			userId: shuffleArr2(users, 1)[0].id
 		}))
 	})
 }
@@ -158,7 +159,7 @@ async function createCourseSession() {
 					location: randstr(10),
 					sessionNo: i,
 					courseId: course.id,
-					files: { connect: shuffleArr2(fileHashesBuf, randint(0, 3)).map(v => ({hash: v})) }
+					files: { connect: shuffleArr2(fileNames, randint(0, 3)).map(v => ({id: v})) }
 				}
 			})
 			waits.push(q)
@@ -253,8 +254,8 @@ async function createForums() {
 	await Promise.all(waits)
 }
 
-const Cfile = createFiles()
 const Cuser = createUsers()
+const Cfile = Cuser.then(createFiles)
 const Ccourse = createCourses()
 const Csession = Promise.all([Ccourse, Cfile]).then(createCourseSession)
 const Cenroll = Promise.all([Cuser, Ccourse]).then(enrollUsersToCourses)
