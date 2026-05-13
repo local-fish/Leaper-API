@@ -18,6 +18,8 @@ model User {
 	courseGrades CourseGrade[]
 	forums Forum[]
 	forumComments ForumComment[]
+	assessmentGrades AssessmentGrade[]
+	assessmentSubmissions AssessmentSubmission[]
 }
 
 model Course {
@@ -28,6 +30,7 @@ model Course {
 	sessions CourseSession[]
 	gradesComp CourseGradeComp[]
 	forums Forum[]
+	assessments Assessment[]
 }
 
 model CourseSession {
@@ -98,4 +101,56 @@ model File {
 	size Int
 
 	courseSessions CourseSession[]
+}
+
+model Assessment {
+	id Int @id @default(autoincrement())
+	courseId Int
+	title String
+	startDate DateTime?
+	endDate DateTime?
+	instruction String @db.VarChar(4000)
+
+	course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+	grades AssessmentGrade[]
+	questions AssessmentQuesiton[]
+	submissions AssessmentSubmission[]
+}
+
+model AssessmentGrade {
+	id Int @id @default(autoincrement())
+	assessmentId Int
+	userId Int
+	grade Float
+
+	assessment Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+	user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model AssessmentQuesiton {
+	id Int @id @default(autoincrement())
+	assessmentId Int
+	revision Int
+	data Bytes @db.MediumBlob
+
+	assessment Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+
+	submissions AssessmentSubmission[]
+
+	@@index([revision])
+}
+
+model AssessmentSubmission {
+	id Int @id @default(autoincrement())
+	assessmentId Int
+	questionId Int
+	userId Int
+	data Bytes @db.MediumBlob
+	grade Float?
+	submitted Boolean? @default(false)
+
+	assessment Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+	question AssessmentQuesiton @relation(fields: [questionId], references: [id], onDelete: Cascade)
+	user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

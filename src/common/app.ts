@@ -5,9 +5,10 @@ import type express from "express"
 import CourseModule from "../course/module";
 import ScheduleModule from "../schedule/module";
 import ForumModule from "../forum/module";
+import AssessmentModule from "../assessment/module";
 
 @Module({
-	imports: [AuthModule, UserModule, CourseModule, ScheduleModule, ForumModule]
+	imports: [AuthModule, UserModule, CourseModule, ScheduleModule, ForumModule, AssessmentModule]
 })
 class App {}
 
