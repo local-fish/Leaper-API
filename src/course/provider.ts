@@ -28,6 +28,7 @@ class CourseProvider {
 		const q = await db.course.findFirst({
 			select: {
 				id: true, name: true,
+				lecturers: { select: { id: true, name: true, email: true, role: true } },
 				_count: { select: { users: true, sessions: true } }
 			},
 			where: { id: courseId }
@@ -156,7 +157,10 @@ namespace CourseProvider {
 		declare sessionCount: number
 	}
 
-	export class Course extends CourseHeader {}
+	export class Course extends CourseHeader {
+		@ApiProperty({ type: [UserProvider.UserInfo] })
+		declare lecturers: UserProvider.UserInfo[]
+	}
 
 	export class Grade {
 		@ApiProperty({ type: 'string' })
