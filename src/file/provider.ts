@@ -14,6 +14,10 @@ class FileProvider {
 		return t
 	}
 
+	protected randomKey() {
+		return crypto.randomBytes(15).toString('base64url')
+	}
+
 	async getUsageByUser(userId: number) {
 		const q = await db.file.aggregate({
 			_sum: { size: true },
@@ -54,14 +58,13 @@ class FileProvider {
 		await this.deleteMany(Array.from(delta))
 	}
 
-	async put(userId: number, name: string, stream: StreamingBlobPayloadInputTypes) {
-		const randkey = crypto.randomBytes(15).toString('base64url')
-
-		const res = await this.s3.put(randkey, stream)
+	async put(opts: FileProvider.PutOptions) {
+		const { userId, name, stream, key = this.randomKey() } = opts
+		const res = await this.s3.put(key, stream)
 
 		await db.file.create({
 			data: {
-				id: randkey,
+				id: key,
 				name: name,
 				userId: userId,
 				size: res.Size ?? 0,
@@ -69,7 +72,7 @@ class FileProvider {
 			}
 		})
 
-		return randkey
+		return key
 	}
 
 	async get(key: string) {
@@ -85,7 +88,14 @@ class FileProvider {
 	}
 }
 
-namespace FileProvider {}
+namespace FileProvider {
+	export interface PutOptions {
+		userId: number
+		name: string
+		stream: StreamingBlobPayloadInputTypes
+		key?: string
+	}
+}
 
 export const fileProvider = new FileProvider
 
