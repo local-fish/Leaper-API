@@ -62,7 +62,7 @@ for (const { id: courseId } of courses) {
 			console.log('   Materials:')
 			const materials = await courseProvider.getSessionMaterials(session.id)
 			for (const material of materials) {
-				console.log(`    - [${material.hash}] ${material.name.padEnd(10)} (${material.size})`)
+				console.log(`    - [${material.id}] ${material.name.padEnd(10)} (${material.size})`)
 			}
 		}
 	}

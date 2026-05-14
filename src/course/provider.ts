@@ -128,11 +128,10 @@ class CourseProvider {
 
 	// TODO: document file
 	async getSessionMaterials(sessionId: number) {
-		const files = await db.file.findMany({
-			select: { name: true, size: true, hash: true },
+		return await db.file.findMany({
+			select: { name: true, size: true, id: true },
 			where: { courseSessions: { some: { id: sessionId } } }
 		})
-		return files.map(v => ({ ...v, hash: Buffer.from(v.hash).toString('base64url') }))
 	}
 }
 
