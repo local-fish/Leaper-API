@@ -112,7 +112,7 @@ async function createUsers() {
 }
 
 async function createFiles() {
-	await Promise.all(filesGen.map(([id, uid, name, content]) => fileProvider.put(uid, name, content, id)))
+	await Promise.all(filesGen.map(([key, userId, name, stream]) => fileProvider.put({ key, userId, name, stream })))
 }
 
 async function createCourseGrade(id: number, courseStudents: number[]) {
