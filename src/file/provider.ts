@@ -3,6 +3,7 @@ import db from "../common/db";
 import crypto from "crypto"
 import S3 from "../common/s3";
 import type { StreamingBlobPayloadInputTypes } from "@smithy/types";
+import { ApiProperty } from "@nestjs/swagger";
 
 @Injectable()
 class FileProvider {
@@ -94,6 +95,15 @@ namespace FileProvider {
 		name: string
 		stream: StreamingBlobPayloadInputTypes
 		key?: string
+	}
+
+	export class  File {
+		@ApiProperty({ type: 'string' })
+		declare id: string
+		@ApiProperty({ type: 'string' })
+		declare name: string
+		@ApiProperty({ type: 'number' })
+		declare size: number
 	}
 }
 

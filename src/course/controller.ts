@@ -2,7 +2,7 @@ import { Controller, UseGuards, Get, Request, Param } from "@nestjs/common";
 import CourseProvider from "./provider";
 import AuthGuard from "../user/authguard";
 import CourseGuard from "./guard";
-import { ApiBearerAuth, ApiResponse } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiOperation, ApiResponse } from "@nestjs/swagger";
 import type App from "../common/app";
 import UserProvider from "../user/provider";
 
@@ -60,7 +60,7 @@ export default class CourseController {
 	}
 
 	@Get('/session/:session/materials')
-	// TODO: document file
+	@ApiOperation({ deprecated: true, description: 'Use `/session/:session` instead' })
 	@UseGuards(CourseGuard.Session.param('session'))
 	async getSession(@Param('session') session: number) {
 		return this.svc.getSessionMaterials(session)

@@ -1,4 +1,5 @@
 import db from '../common/db'
+import FileProvider from '../file/provider'
 import UserProvider from '../user/provider'
 import { Injectable } from '@nestjs/common'
 import { ApiProperty } from '@nestjs/swagger'
@@ -120,13 +121,21 @@ class CourseProvider {
 				sessionNo: true,
 				startTime: true,
 				endTime: true,
-				location: true
+				location: true,
+
+				files: {
+					select: {
+						id: true,
+						name: true,
+						size: true
+					}
+				}
 			},
 			where: { id: sessionId }
 		})
 	}
 
-	// TODO: document file
+	/** @deprecated Use {@link getSessionDetail} instead */
 	async getSessionMaterials(sessionId: number) {
 		return await db.file.findMany({
 			select: { name: true, size: true, id: true },
@@ -183,6 +192,8 @@ namespace CourseProvider {
 	export class Session extends SessionHeader {
 		@ApiProperty({ type: 'number' })
 		declare courseId: number
+		@ApiProperty({ type: [FileProvider.File] })
+		declare files: FileProvider.File[]
 	}
 }
 
