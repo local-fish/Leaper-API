@@ -2,7 +2,6 @@ import { ForumCreateManyCourseInput, UserCreateManyInput } from "../prisma/gener
 import { authProvider } from "../src/auth/provider";
 import * as util from "./util"
 import db from "../src/common/db";
-import { fileProvider } from "../src/file/provider";
 if (!process.env.DEV) throw new Error('DEV must be set to true')
 
 const usersGen: [id: number, username: string, password: string][] = [
@@ -112,7 +111,15 @@ async function createUsers() {
 }
 
 async function createFiles() {
-	await Promise.all(filesGen.map(([key, userId, name, stream]) => fileProvider.put({ key, userId, name, stream })))
+	if (process.env.S3_ACCESS_SECRET && !process.env.S3_DEV_NOGEN) {
+		const { fileProvider } = await import("../src/file/provider");
+		await Promise.all(filesGen.map(([key, userId, name, stream]) => fileProvider.put({ key, userId, name, stream })))
+	} else {
+		console.log('Skipping creating files to bucket')
+		await db.file.createMany({
+			data: filesGen.map(([id, userId, name, {length: size}]) => ({ gcCluster: 1, id, name, userId, size }))
+		})
+	}
 }
 
 async function createCourseGrade(id: number, courseStudents: number[]) {
