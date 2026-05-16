@@ -10,6 +10,7 @@ class CourseProvider {
 		const q = await db.course.findMany({
 			select: {
 				id: true, name: true,
+				lecturers: { select: { id: true, name: true, email: true, role: true } },
 				_count: { select: { users: true, sessions: true } }
 			},
 			where: { users: { some: { id: userid } } }
