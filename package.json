@@ -2,30 +2,27 @@
   "scripts": {
     "start": "bun src/main.ts",
     "build": "bunx prisma generate && bunx @nestjs/cli build"
-  },
-  "devDependencies": {
-    "@types/express": "^5.0.6",
-    "@types/node": "^25.6.0",
-    "prisma": "^7.8.0",
-    "typescript": "^5.9.3",
-    "@nestjs/cli": "^10.0.0",
-    "@nestjs/schematics": "^10.0.0"
-  },
-  "dependencies": {
-    "@nestjs/common": "^11.0.1",
-    "@nestjs/core": "^11.0.1",
-    "@nestjs/jwt": "^11.0.2",
-    "@nestjs/platform-express": "^11.0.1",
-    "@nestjs/swagger": "^11.4.2",
-    "@prisma/adapter-pg": "^7.8.0",
-    "@prisma/client": "^7.8.0",
-    "class-transformer": "^0.5.1",
-    "class-validator": "^0.15.1",
-    "dotenv": "^17.4.2",
-    "reflect-metadata": "^0.2.2",
-    "rxjs": "^7.8.1",
-    "tsconfig-paths": "^4.2.0"
-  },
-
+	},
+	"devDependencies": {
+		"@smithy/types": "^4.14.1",
+		"@types/express": "^5.0.6",
+		"@types/node": "^25.6.0",
+		"prisma": "^7.8.0",
+		"typescript": "^6.0.3"
+	},
+	"dependencies": {
+		"@aws-sdk/client-s3": "^3.1045.0",
+		"@aws-sdk/s3-request-presigner": "^3.1045.0",
+		"@nestjs/common": "^11.0.1",
+		"@nestjs/core": "^11.0.1",
+		"@nestjs/jwt": "^11.0.2",
+		"@nestjs/platform-express": "^11.0.1",
+		"@nestjs/swagger": "^11.4.2",
+		"@prisma/adapter-mariadb": "^7.8.0",
+		"@prisma/client": "^7.8.0",
+		"class-transformer": "^0.5.1",
+		"class-validator": "^0.15.1",
+		"dotenv": "^17.4.2"
+	},
   "version": "deploy"
 }

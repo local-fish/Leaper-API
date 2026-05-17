@@ -17,4 +17,10 @@ export default class UserController {
 		if (info) return info
 		throw new NotFoundException()
 	}
+
+  @Get('/health')
+  @UseGuards(AuthGuard)
+  async health(@Request() req: App.Request) {
+    return { ok: true, userId: req.userId }
+  }
 }

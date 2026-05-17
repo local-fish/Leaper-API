@@ -1,6 +1,8 @@
 generator client {
 	provider = "prisma-client"
 	output   = "./generated"
+
+	moduleFormat = "cjs"
 }
 
 datasource db {
@@ -14,20 +16,26 @@ model User {
 	role String
 	pwhash Bytes
 
-	courses Course[]
+	courses Course[] @relation(name: "students")
+	coursesLecturings Course[] @relation(name: "lecturers")
 	courseGrades CourseGrade[]
 	forums Forum[]
 	forumComments ForumComment[]
+	assessmentGrades AssessmentGrade[]
+	assessmentSubmissions AssessmentSubmission[]
+	files File[]
 }
 
 model Course {
 	id Int @id @default(autoincrement())
 	name String
 
-	users User[]
+	users User[] @relation(name: "students")
+	lecturers User[] @relation(name: "lecturers")
 	sessions CourseSession[]
 	gradesComp CourseGradeComp[]
 	forums Forum[]
+	assessments Assessment[]
 }
 
 model CourseSession {
@@ -93,9 +101,67 @@ model ForumComment {
 }
 
 model File {
-	hash Bytes @id
+	id String @id
 	name String
+	userId Int
 	size Int
+	gcCluster Int @db.TinyInt
+
+	owner User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
 	courseSessions CourseSession[]
+
+	@@index([gcCluster])
+}
+
+model Assessment {
+	id Int @id @default(autoincrement())
+	courseId Int
+	title String
+	startDate DateTime?
+	endDate DateTime?
+	instruction String @db.VarChar(4000)
+
+	course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+	grades AssessmentGrade[]
+	questions AssessmentQuesiton[]
+	submissions AssessmentSubmission[]
+}
+
+model AssessmentGrade {
+	id Int @id @default(autoincrement())
+	assessmentId Int
+	userId Int
+	grade Float
+
+	assessment Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+	user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model AssessmentQuesiton {
+	id Int @id @default(autoincrement())
+	assessmentId Int
+	revision Int
+	data Bytes @db.MediumBlob
+
+	assessment Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+
+	submissions AssessmentSubmission[]
+
+	@@index([revision])
+}
+
+model AssessmentSubmission {
+	id Int @id @default(autoincrement())
+	assessmentId Int
+	questionId Int
+	userId Int
+	data Bytes @db.MediumBlob
+	grade Float?
+	submitted Boolean? @default(false)
+
+	assessment Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+	question AssessmentQuesiton @relation(fields: [questionId], references: [id], onDelete: Cascade)
+	user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

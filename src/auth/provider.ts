@@ -3,6 +3,9 @@ import UserProvider from '../user/provider'
 import { Injectable } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import crypto from 'crypto'
+import assert from 'assert'
+
+assert(process.env.PASSWORD_SECRET, 'PASSWORD_SECRET not defined')
 
 const secretConst = 'J8rnlOZIRw7ruly_'
 

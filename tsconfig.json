@@ -5,9 +5,8 @@
     "rootDirs": ["src", "prisma"],
 		"module": "commonjs",
 		"moduleResolution": "node",
+
 		"allowSyntheticDefaultImports": true,
-		"esModuleInterop": true,
-		"isolatedModules": true,
 
 		"target": "esnext",
 		"outDir": "./dist",
@@ -19,11 +18,11 @@
 		"experimentalDecorators": true,
 
 		"skipLibCheck": true,
-		"baseUrl": "./",
 		"incremental": true,
 		"forceConsistentCasingInFileNames": true,
 		"strict": true
 
 	},
-	"include": ["src", "dbtest", "prisma/generated"]
+
+	"include": ["src", "prisma/generated"]
 }

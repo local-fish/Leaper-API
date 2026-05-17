@@ -1,5 +1,5 @@
 import { Controller, Get, Param, ParseIntPipe, UseGuards, Query, Patch, Body, Delete, Post, Request } from "@nestjs/common";
-import { ApiBearerAuth, ApiProperty, ApiResponse } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiProperty, ApiQuery, ApiResponse } from "@nestjs/swagger";
 import { IsNumber, IsOptional, IsString, MaxLength } from "class-validator";
 import ForumProvider from "./provider";
 import CourseGuard from "../course/guard";
@@ -62,6 +62,11 @@ export default class ForumController {
 	@Get('/forum/:id/comments')
 	@UseGuards(ForumGuard.param('id'))
 	@ApiResponse({ type: [ForumProvider.Comment] })
+  @ApiQuery({
+	name: 'replyId',
+	required: false,
+	type: Number,
+  })
 	async getComments(
 		@Param('id') id: number,
 		@Query('replyId', new ParseIntPipe({ optional: true })) replyId?: number
