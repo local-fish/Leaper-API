@@ -1,6 +1,6 @@
-<center>
+<div align="center">
 <img src="doc/icon.png" height="100px">
-</center>
+</div>
 <br/>
 
 # Leaper: Digital Learning Platform
