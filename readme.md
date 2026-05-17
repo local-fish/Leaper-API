@@ -1,11 +1,17 @@
-## Project Description
-This is the backend for the Leaper project, a basic LMS built around Nest.js and Flutter. This backend is written in Nest.js
-Note: This Project is Divided into two Repos. For the Front End Repo, see https://github.com/local-fish/Leaper
+<center>
+<img src="doc/icon.png" height="100px">
+</center>
+<br/>
 
-Currently the project encompasses the following API
-- Course System
-- Schedule System
-- Forum System
+# Leaper: Digital Learning Platform
+
+Leaper is a digital platform to manage learning system.
+
+This is the backend for the Leaper project, a basic LMS built around Nest.js and Flutter. This backend is written in Nest.js
+
+> [!NOTE]
+> This Project is Divided into two Repos. For the Front End Repo, see
+> https://github.com/local-fish/Leaper
 
 ## Requirements
 
@@ -16,8 +22,7 @@ Currently the project encompasses the following API
 
 1. Install dependencies: `bun i`
 
-2. Configure database: `cp .env.example .env`
-Note: it is also required to setup a MySQL Database and the appropriate configuration in .env
+2. Configure environment: `cp .env.example .env`
 
 3. Generate database: `bun prisma generate && bun prisma db push`
 
