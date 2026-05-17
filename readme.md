@@ -5,7 +5,7 @@
 
 # Leaper: Digital Learning Platform
 
-Leaper is a digital platform to manage learning system.
+Leaper is a digital platform to manage learning systems.
 
 This is the backend for the Leaper project, a basic LMS built around Nest.js and Flutter. This backend is written in Nest.js
 
