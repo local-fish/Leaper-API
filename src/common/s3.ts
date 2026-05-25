@@ -7,10 +7,12 @@ assert(process.env.S3_ENDPOINT, 'S3_ENDPOINT not defined')
 assert(process.env.S3_ACCESS_KEY_ID, 'S3_ACCESS_KEY_ID not defined')
 assert(process.env.S3_ACCESS_SECRET, 'S3_ACCESS_SECRET not defined')
 assert(process.env.S3_BUCKET, 'S3_BUCKET not defined')
+assert(process.env.S3_PROVIDER, 'S3_PROVIDER not defined')
 
 const client = new S3Client({
-	region: "auto",
+	region: process.env.S3_REGION ?? 'auto', 
 	endpoint: process.env.S3_ENDPOINT,
+  forcePathStyle: process.env.S3_PROVIDER == 'minio',
 	credentials: {
 		accessKeyId: process.env.S3_ACCESS_KEY_ID,
 		secretAccessKey: process.env.S3_ACCESS_SECRET,
