@@ -24,7 +24,7 @@ This is the backend for the Leaper project, a basic LMS built around Nest.js and
 
 2. Configure environment: `cp .env.example .env`
 
-3. Generate database: `bun prisma generate && bun prisma db push`
+3. Generate database: `bun prisma generate --schema prisma/schema.[postgresql/mysql].prisma && bun prisma db push`
 
 ## Running
 
