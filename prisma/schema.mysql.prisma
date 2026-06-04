@@ -16,7 +16,8 @@ model User {
 	role String
 	pwhash Bytes @db.Binary(32)
 
-	courses Course[] @relation(name: "students")
+	courses Course[] @relation(name: "users")
+	coursesStudent Course[] @relation(name: "students")
 	coursesLecturings Course[] @relation(name: "lecturers")
 	courseGrades CourseGrade[]
 	forums Forum[]
@@ -30,7 +31,8 @@ model Course {
 	id Int @id @default(autoincrement())
 	name String
 
-	users User[] @relation(name: "students")
+	users User[] @relation(name: "users")
+	students User[] @relation(name: "students")
 	lecturers User[] @relation(name: "lecturers")
 	sessions CourseSession[]
 	gradesComp CourseGradeComp[]
@@ -105,7 +107,7 @@ model File {
 	name String
 	userId Int
 	size Int
-	gcCluster Int 
+	gcCluster Int
 
 	owner User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -143,7 +145,7 @@ model AssessmentQuesiton {
 	id Int @id @default(autoincrement())
 	assessmentId Int
 	revision Int
-	data Bytes 
+	data Bytes
 
 	assessment Assessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
 
@@ -157,7 +159,7 @@ model AssessmentSubmission {
 	assessmentId Int
 	questionId Int
 	userId Int
-	data Bytes 
+	data Bytes
 	grade Float?
 	submitted Boolean? @default(false)
 

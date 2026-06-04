@@ -10,11 +10,11 @@ class CourseProvider {
 		const q = await db.course.findMany({
 			select: {
 				id: true, name: true,
-				_count: { select: { users: true, sessions: true } }
+				_count: { select: { students: true, sessions: true } }
 			},
 			where: { users: { some: { id: userid } } }
 		})
-		return q.map(({ _count, ...course }): CourseProvider.CourseHeader => ({ ...course, studentCount: _count.users, sessionCount: _count.sessions }))
+		return q.map(({ _count, ...course }): CourseProvider.CourseHeader => ({ ...course, studentCount: _count.students, sessionCount: _count.sessions }))
 	}
 
 	async hasUser(courseId: number, userId: number) {
@@ -50,7 +50,7 @@ class CourseProvider {
 
 	}
 
-	async getUsers(courseId: number): Promise<UserProvider.UserInfo[]> {
+	async getStudents(courseId: number): Promise<UserProvider.UserInfo[]> {
 		return db.user.findMany({
 			select: { id: true, name: true, email: true, role: true },
 			where: { courses: { some: { id: courseId } } }
@@ -73,7 +73,7 @@ class CourseProvider {
 					}
 				}
 			},
-			where: { users: { some: { id: userId } } }
+			where: { students: { some: { id: userId } } }
 		})
 		return r.map(v => ({
 			courseId: v.id,
@@ -88,7 +88,7 @@ class CourseProvider {
 	async getCourseAllGrades(courseId: number): Promise<CourseProvider.GradeList|undefined> {
 		const r = await db.course.findFirst({
 			select: {
-				users: {
+				students: {
 					select: { id: true, name: true }
 				},
 				gradesComp: {
@@ -105,7 +105,7 @@ class CourseProvider {
 		if (!r) return
 		const names = r.gradesComp.map(v => v.name)
 		const namesMap = Object.fromEntries(names.map((v,i) => [v, i]))
-		const userGrades = new Map(r.users.map(v => [v.id, { user: v, grades: Array(names.length) }]))
+		const userGrades = new Map(r.students.map(v => [v.id, { user: v, grades: Array(names.length) }]))
 
 		for (const component of r.gradesComp) {
 			for (const grade of component.grades) {

@@ -29,7 +29,7 @@ export default class CourseController {
 	@ApiResponse({ type: [UserProvider.UserInfo] })
 	@UseGuards(CourseGuard.param('id'))
 	async getStudents(@Param('id') id: number) {
-		return this.svc.getUsers(id)
+		return this.svc.getStudents(id)
 	}
 
 	@Get('/course/:id/sessions')
