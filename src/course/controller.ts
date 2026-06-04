@@ -1,4 +1,4 @@
-import { Controller, UseGuards, Get, Request, Param, NotFoundException } from "@nestjs/common";
+import { Controller, UseGuards, Get, Request, Param, NotFoundException, Body, Post, HttpCode } from "@nestjs/common";
 import CourseProvider from "./provider";
 import AuthGuard from "../user/authguard";
 import CourseGuard from "./guard";
@@ -46,13 +46,22 @@ export default class CourseController {
 		return this.svc.getUserCourseGrades(id, req.userId!)
 	}
 
-	@Get('/course/:id/lecturer/studentgrades')
+	@Get('/course/lecturer/:id/grades/student')
 	@ApiResponse({ type: [CourseProvider.GradeList] })
 	@UseGuards(CourseGuard.Lecturer.param('id'))
 	async getStudentGrades(@Param('id') id: number) {
 		const r = this.svc.getCourseAllGrades(id)
 		if (!r) throw new NotFoundException()
 		return r
+	}
+
+	@HttpCode(200)
+	@Post('/course/lecturer/grades/edit')
+	@UseGuards(CourseGuard.Lecturer.create(req => req.body.courseId))
+	async editStudentGrade(@Body() body: CourseProvider.GradeEdit) {
+		const r = this.svc.editCourseGrade(body)
+		if (!r) throw new NotFoundException()
+		return ''
 	}
 
 	@Get('/grades')
