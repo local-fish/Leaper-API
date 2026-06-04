@@ -19,18 +19,23 @@ const usersGen: [id: number, username: string, password: string][] = [
 	[9911, 'henry'    , 'henry'   ],
 	[9912, 'jimmy'    , 'jimmy'   ],
 	[9913, 'foo'      , 'foo'     ],
-	[9999, 'system'   , 'system'  ],
+]
+
+const lecturersGen: [id: number, username: string, password: string][] = [
+	[8900, 'john'     , 'john'    ],
+	[8901, 'charles'  , 'charles' ],
+	[8902, 'matthew'  , 'matthew' ]
 ]
 
 const filesGen: [id: string, uid: number, name: string, content: string][] = [
-	['x1', 9999, '1byte.txt', 'a'],
-	['x2', 9999, '1kb.txt', 'a'.repeat(1024)],
-	['x3', 9999, '1mb.txt', 'a'.repeat(1048576)],
-	['x4', 9999, 'not_a_ppt.ppt', 'YOU FOOL'],
-	['x5', 9999, 'not_a_doc.doc', 'YOU FOOL'],
-	['x6', 9999, 'not_a_zip.zip', 'YOU FOOL'],
-	['x7', 9999, 'not_a_image.png', 'YOU FOOL'],
-	['x8', 9999, 'not_a_image.jpg', 'YOU FOOL'],
+	['x1', 8900, '1byte.txt', 'a'],
+	['x2', 8900, '1kb.txt', 'a'.repeat(1024)],
+	['x3', 8900, '1mb.txt', 'a'.repeat(1048576)],
+	['x4', 8900, 'not_a_ppt.ppt', 'YOU FOOL'],
+	['x5', 8900, 'not_a_doc.doc', 'YOU FOOL'],
+	['x6', 8900, 'not_a_zip.zip', 'YOU FOOL'],
+	['x7', 8900, 'not_a_image.png', 'YOU FOOL'],
+	['x8', 8900, 'not_a_image.jpg', 'YOU FOOL'],
 ]
 
 const courseGen = {
@@ -92,22 +97,27 @@ const forumGen = {
 		lecForums: { min: 3, max: 5 },
 		bodySentences: { min: 3, max: 15 },
 
-		commentChance: 0.5,
+		commentChance: 0.3,
 		commentBodySentences: { min: 1, max: 8 },
-		replyChance: 0.4,
+		replyChance: 0.25,
+	}
+}
+
+function createUserParam(id: number, name: string, pass: string, role: string): UserCreateManyInput {
+	return {
+		name: name,
+		email: name + '@example.com',
+		role: role,
+		id: id,
+		pwhash: authProvider.hashPassword(name, pass),
 	}
 }
 
 async function createUsers() {
-	await db.user.createMany({
-		data: usersGen.map(([id, name, pass]): UserCreateManyInput => ({
-			name: name,
-			email: name + '@example.com',
-			role: 'Student',
-			id: id,
-			pwhash: authProvider.hashPassword(name, pass),
-		}))
-	})
+	const u = usersGen.map(([id, name, pass]) => createUserParam(id, name, pass, 'Student'))
+	const l = lecturersGen.map(([id, name, pass]) => createUserParam(id, name, pass, 'Teacher'))
+
+	await db.user.createMany({ data: u.concat(l) })
 }
 
 async function createFiles() {
@@ -170,7 +180,7 @@ async function addSessionMaterials(id: number) {
 
 async function createCourse(name: string, sessions: string[]) {
 	const courseUsers = util.selectRandomMulti(usersGen, courseGen.config.users).map(v => v[0])
-	const courseLecs = util.selectRandomMulti(courseUsers, courseGen.config.lecturers)
+	const courseLecs = util.selectRandomMulti(lecturersGen, courseGen.config.lecturers).map(v => v[0])
 	const courseStudents = Array.from(new Set(courseUsers).difference(new Set(courseLecs)))
 
 	let sessionStart = Date.now() + Math.random() * 28 * 86400000
@@ -183,7 +193,8 @@ async function createCourse(name: string, sessions: string[]) {
 		},
 		data: {
 			name: name,
-			users: { connect: courseUsers.map(id => ({id})) },
+			students: { connect: courseUsers.map(id => ({id})) },
+			users: { connect: courseUsers.concat(courseLecs).map(id => ({id})) },
 			lecturers: { connect: courseLecs.map(id => ({id})) },
 
 			gradesComp: {

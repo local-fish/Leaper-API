@@ -24,7 +24,7 @@ for (const {id: userid} of users) {
 		const courses = await courseProvider.getCoursesFromUser(userid)
 		for (const courseInfo of courses) {
 			console.log(' - ' + formatCourse(courseInfo))
-			const gradesInfo = await courseProvider.getUserGradesCourse(courseInfo.id, userid)
+			const gradesInfo = await courseProvider.getUserCourseGrades(courseInfo.id, userid)
 			console.log('    - scores:', gradesInfo.map(v => `${v.component.padStart(5)}: ${String(v.grade ?? '-').padEnd(3)}`).join('; '))
 		}
 	}
@@ -43,14 +43,18 @@ async function forumComments(forumId: number, parentId: number | null | undefine
 console.log('====== COURSES ======')
 const courses = await db.course.findMany({ select: { id: true } })
 for (const { id: courseId } of courses) {
-	{
-		const courseinfo = await courseProvider.getInfo(courseId)
-		if (courseinfo) console.log(formatCourse(courseinfo))
-	}
+	const courseinfo = await courseProvider.getInfo(courseId)
+	if (courseinfo) console.log(formatCourse(courseinfo))
 	{
 		console.log('Students:')
-		const courseUsers = await courseProvider.getUsers(courseId)
+		const courseUsers = await courseProvider.getStudents(courseId)
 		for (const user of courseUsers) {
+			console.log(' - ' + formatUser(user))
+		}
+	}
+	{
+		console.log('Teachers:')
+		for (const user of courseinfo!.lecturers) {
 			console.log(' - ' + formatUser(user))
 		}
 	}
