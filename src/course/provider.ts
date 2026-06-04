@@ -25,7 +25,7 @@ class CourseProvider {
 	}
 
 	async isLecturer(courseId: number, userId: number) {
-		return !!db.course.findFirst({
+		return !!await db.course.findFirst({
 			select: { id: true },
 			where: { id: courseId, lecturers: { some: { id: userId } } }
 		})
