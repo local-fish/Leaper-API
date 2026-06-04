@@ -25,6 +25,13 @@ class CourseProvider {
 		})
 	}
 
+	async isLecturer(courseId: number, userId: number) {
+		return !!db.course.findFirst({
+			select: { id: true },
+			where: { id: courseId, lecturers: { some: { id: userId } } }
+		})
+	}
+
 	async getInfo(courseId: number): Promise<CourseProvider.Course | undefined> {
 		const q = await db.course.findFirst({
 			select: {
@@ -51,7 +58,7 @@ class CourseProvider {
 		})
 	}
 
-	async getUserGrades(userId: number): Promise<CourseProvider.CourseGrade[]> {
+	async getStudentAllGrades(userId: number): Promise<CourseProvider.CourseGrade[]> {
 		const r = await db.course.findMany({
 			select: {
 				id: true,
@@ -79,7 +86,43 @@ class CourseProvider {
 		}))
 	}
 
-	async getUserGradesCourse(courseId: number, userId: number): Promise<CourseProvider.Grade[]> {
+	async getCourseAllGrades(courseId: number): Promise<CourseProvider.GradeList|undefined> {
+		const r = await db.course.findFirst({
+			select: {
+				users: {
+					select: { id: true, name: true }
+				},
+				gradesComp: {
+					select: {
+						name: true,
+						grades: {
+							select: { id: true, userId: true, grade: true }
+						}
+					}
+				}
+			},
+			where: { id: courseId }
+		})
+		if (!r) return
+		const names = r.gradesComp.map(v => v.name)
+		const namesMap = Object.fromEntries(names.map((v,i) => [v, i]))
+		const userGrades = new Map(r.users.map(v => [v.id, { user: v, grades: Array(names.length) }]))
+
+		for (const component of r.gradesComp) {
+			for (const grade of component.grades) {
+				let u = userGrades.get(grade.userId)
+				if (!u) continue
+				u.grades[namesMap[component.name]] = grade.grade
+			}
+		}
+
+		return {
+			componentNames: names,
+			scores: Array.from(userGrades.values())
+		}
+	}
+
+	async getUserCourseGrades(courseId: number, userId: number): Promise<CourseProvider.Grade[]> {
 		const q = await db.courseGradeComp.findMany({
 			select: {
 				name: true,
@@ -199,6 +242,20 @@ namespace CourseProvider {
 		declare courseId: number
 		@ApiProperty({ type: [FileProvider.File] })
 		declare files: FileProvider.File[]
+	}
+
+	export class UserGrade {
+		@ApiProperty({ type: [UserProvider.UserInfoHeader] })
+		declare user: UserProvider.UserInfoHeader
+		@ApiProperty({ type: 'number', isArray: true, nullable: true })
+		declare grades: number[]
+	}
+
+	export class GradeList {
+		@ApiProperty({ type: [String] })
+		declare componentNames: string[]
+		@ApiProperty({ type: [UserGrade] })
+		declare scores: UserGrade[]
 	}
 }
 
