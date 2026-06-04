@@ -94,6 +94,7 @@ class CourseProvider {
 				gradesComp: {
 					select: {
 						name: true,
+						id: true,
 						grades: {
 							select: { id: true, userId: true, grade: true }
 						}
@@ -103,20 +104,20 @@ class CourseProvider {
 			where: { id: courseId }
 		})
 		if (!r) return
-		const names = r.gradesComp.map(v => v.name)
-		const namesMap = Object.fromEntries(names.map((v,i) => [v, i]))
-		const userGrades = new Map(r.students.map(v => [v.id, { user: v, grades: Array(names.length) }]))
+		const compMap = new Map(r.gradesComp.map((v,i) => [v.id, i]))
+		const userGrades = new Map(r.students.map(v => [v.id, { user: v, grades: Array(r.gradesComp.length) }]))
 
 		for (const component of r.gradesComp) {
+			const gradeIndex = compMap.get(component.id)!
 			for (const grade of component.grades) {
 				let u = userGrades.get(grade.userId)
 				if (!u) continue
-				u.grades[namesMap[component.name]] = grade.grade
+				u.grades[gradeIndex] = grade.grade
 			}
 		}
 
 		return {
-			componentNames: names,
+			components: r.gradesComp,
 			scores: Array.from(userGrades.values())
 		}
 	}
@@ -250,9 +251,16 @@ namespace CourseProvider {
 		declare grades: number[]
 	}
 
+	export class GradeComponent {
+		@ApiProperty({ type: 'number' })
+		declare id: number
+		@ApiProperty({ type: 'string' })
+		declare name: string
+	}
+
 	export class GradeList {
-		@ApiProperty({ type: [String] })
-		declare componentNames: string[]
+		@ApiProperty({ type: [GradeComponent] })
+		declare components: GradeComponent[]
 		@ApiProperty({ type: [UserGrade] })
 		declare scores: UserGrade[]
 	}
