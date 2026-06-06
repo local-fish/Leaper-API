@@ -5,26 +5,26 @@ import db from "../src/common/db";
 if (!process.env.DEV) throw new Error('DEV must be set to true')
 
 const usersGen: [id: number, username: string, password: string][] = [
-	[9900, 'andrew'   , 'fish'    ],
-	[9901, 'evankim'  , 'pork'    ],
-	[9902, 'tommylim' , 'tommylim'],
-	[9903, 'calvin'   , 'calvin'  ],
-	[9904, 'alex'     , 'alex'    ],
-	[9905, 'thomas'   , 'thomas'  ],
-	[9906, 'kenneth'  , 'kenneth' ],
-	[9907, 'abel'     , 'abel'    ],
-	[9908, 'jonathan' , 'dummy123'],
-	[9909, 'charlie'  , 'dummy123'],
-	[9910, 'joe'      , 'joe'     ],
-	[9911, 'henry'    , 'henry'   ],
-	[9912, 'jimmy'    , 'jimmy'   ],
+	[9900, 'Andrew P' , 'fish'    ],
+	[9901, 'Evan K'   , 'pork'    ],
+	[9902, 'Tommy'    , 'tommylim'],
+	[9903, 'Calvin Chan', 'calvin'  ],
+	[9904, 'Alex G'   , 'alex'    ],
+	[9905, 'Thomas'   , 'thomas'  ],
+	[9906, 'Kenneth'  , 'kenneth' ],
+	[9907, 'Abel'     , 'abel'    ],
+	[9908, 'Jonathan E', 'dummy123'],
+	[9909, 'Charlie R', 'dummy123'],
+	[9910, 'Joe P'    , 'joe'     ],
+	[9911, 'Henry L'  , 'henry'   ],
+	[9912, 'Jimmy C'  , 'jimmy'   ],
 	[9913, 'foo'      , 'foo'     ],
 ]
 
 const lecturersGen: [id: number, username: string, password: string][] = [
-	[8900, 'john'     , 'john'    ],
-	[8901, 'charles'  , 'charles' ],
-	[8902, 'matthew'  , 'matthew' ]
+	[8900, 'John'     , 'john'    ],
+	[8901, 'Charles'  , 'charles' ],
+	[8902, 'Matthew W', 'matthew' ]
 ]
 
 const filesGen: [id: string, uid: number, name: string, content: string][] = [
