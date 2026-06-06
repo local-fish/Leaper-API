@@ -77,6 +77,13 @@ export default class CourseController {
 		return this.svc.getSessionDetail(session)
 	}
 
+  @HttpCode(200)
+  @Post('/session/:session/files')
+  @UseGuards(CourseGuard.LecturerSession.param('session'))
+  async addSessionFile(@Param('session') session: number, @Body() body: CourseProvider.SessionFileDto) {
+    return this.svc.linkFileToSession(session, body.fileId)
+  }
+
 	@Get('/session/:session/materials')
 	@ApiOperation({ deprecated: true, description: 'Use `/session/:session` instead' })
 	@UseGuards(CourseGuard.Session.param('session'))

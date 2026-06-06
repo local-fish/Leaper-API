@@ -1,4 +1,4 @@
-import { IsNumber, IsOptional } from 'class-validator'
+import { IsNumber, IsOptional, IsString } from 'class-validator'
 import db from '../common/db'
 import FileProvider from '../file/provider'
 import UserProvider from '../user/provider'
@@ -187,6 +187,15 @@ class CourseProvider {
 		})
 	}
 
+  async sessionIsLecturer(sessionId: number, userId: number) {
+    const session = await db.courseSession.findUnique({
+      where: { id: sessionId },
+      select: { courseId: true }
+    })
+    if (!session) return false
+    return this.isLecturer(session.courseId, userId)
+  }
+
 	async getSessionDetail(sessionId: number): Promise<CourseProvider.Session | null> {
 		return db.courseSession.findFirst({
 			select: {
@@ -209,6 +218,17 @@ class CourseProvider {
 			where: { id: sessionId }
 		})
 	}
+
+  async linkFileToSession(sessionId: number, fileId: string) {
+    return db.courseSession.update({
+      where: { id: sessionId },
+      data: {
+        files: {
+          connect: { id: fileId }
+        }
+      }
+    })
+  }
 
 	/** @deprecated Use {@link getSessionDetail} instead */
 	async getSessionMaterials(sessionId: number) {
@@ -313,6 +333,12 @@ namespace CourseProvider {
 		@IsOptional()
 		declare grade?: number
 	}
+
+  export class SessionFileDto {
+    @IsString()
+    @ApiProperty({ type: 'string' })
+    declare fileId: string
+  }
 }
 
 export default CourseProvider
