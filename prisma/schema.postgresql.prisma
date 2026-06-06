@@ -14,7 +14,7 @@ model User {
 	name String @unique
 	email String
 	role String
-	pwhash Bytes @db.Binary(32)
+	pwhash Bytes 
 
 	courses Course[] @relation(name: "users")
 	coursesStudent Course[] @relation(name: "students")
