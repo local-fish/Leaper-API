@@ -72,8 +72,9 @@ class CourseProvider {
 						name: true,
 						grades: {
 							select: {
-								grade: true
-							}
+								grade: true,
+							},
+              where: { userId: userId }
 						}
 					}
 				}
