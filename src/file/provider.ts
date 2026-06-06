@@ -86,7 +86,32 @@ class FileProvider {
 
 	async getPresign(key: string) {
 		return this.s3.getPresign(undefined, key)
-	}
+  }
+
+  async getPutPresign(userId: number, name: string) {
+    const key = this.randomKey()
+    // Pre-created DB record, pass key to FE to then let FE hit the BE with the confirm upload endpoint below.
+    await db.file.create({
+      data: {
+        id: key,
+        name: name,
+        userId: userId,
+        size: 0, // unknown until upload completes
+        gcCluster: this.getCurrentGcCluster(),
+      }
+    })
+    const url = await this.s3.putPresign(undefined, key, '' as any)
+    const clientUrl = url.replace('localhost', process.env.S3_CLIENT_ENDPOINT ?? 'localhost')
+    return { key, clientUrl }
+  }
+
+  async confirmUpload(key: string) {
+    const head = await this.s3.head(key)
+    await db.file.update({
+      where: { id: key },
+      data: { size: head.ContentLength ?? 0 }
+    })
+  }
 }
 
 namespace FileProvider {
