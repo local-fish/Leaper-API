@@ -6,6 +6,7 @@ import AuthGuard from "../user/authguard";
 import { NoSuchKey, NotFound } from "@aws-sdk/client-s3";
 import { PresignBody } from "./dto/presign";
 import { LecturerGuard } from "./guard";
+import db from "../common/db";
 
 
 @Controller()
@@ -21,8 +22,13 @@ export default class FileController {
 	})
 	async getFile(@Param('id') id: string, @Response() res: App.Response) {
 		try {
+      const file = await db.file.findUnique({ 
+        where: { id },
+        select: { name: true }
+      })
 			await this.svc.head(id)
-			res.redirect(await this.svc.getPresign(id))
+      if (!file) throw new NotFoundException()
+			res.redirect(await this.svc.getPresign(id, file.name))
 		} catch(e) {
 			if (e instanceof NoSuchKey || e instanceof NotFound) throw new NotFoundException()
 
@@ -34,7 +40,7 @@ export default class FileController {
   @HttpCode(200)
   @UseGuards(LecturerGuard)
   async getPresign(@Req() req: App.Request, @Body() body: PresignBody) {
-    return this.svc.getPutPresign(req.userId!, body.name)
+    return this.svc.getPutPresign(req.userId!, body.name, body.contentType)
   }
 
   @Post('/file/confirm/:key')
