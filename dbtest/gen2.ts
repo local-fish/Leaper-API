@@ -19,6 +19,7 @@ const usersGen: [id: number, username: string, password: string][] = [
 	[9911, 'Henry L'  , 'henry'   ],
 	[9912, 'Jimmy C'  , 'jimmy'   ],
 	[9913, 'foo'      , 'foo'     ],
+	[9999, 'system'   , 'system'  ],
 ]
 
 const lecturersGen: [id: number, username: string, password: string][] = [
@@ -47,7 +48,7 @@ const courseGen = {
 		sessions: ['Introduction to Computational Physics', 'Electric Charge', 'Voltage', 'Current', 'Resistance', 'Capacitance', 'Circuit', 'Magnetic Fields', 'Induction and Inductance']
 	}, {
 		name: 'Chemistry',
-		sessions: ['Introduction to Chemistry', 'Acid and Base', 'Molecule', 'Compound', 'IUPAC', 'Electrolysis', 'Chemical Reaction', 'Colligative Properties', 'Colloid', 'Oxidation', 'Reuction']
+		sessions: ['Introduction to Chemistry', 'Acid and Base', 'Molecule', 'Compound', 'IUPAC', 'Electrolysis', 'Chemical Reaction', 'Colligative Properties', 'Colloid', 'Oxidation', 'Reduction']
 	}, {
 		name: 'Database',
 		sessions: ['Introduction to Database', 'Relational Model', 'Relational Algebra', 'Relational Calculus', 'Schema Refinement', 'Normal Forms', 'SQL', 'Advanced SQL', 'Transaction', 'Concurrency']
@@ -71,7 +72,7 @@ const courseGen = {
 		sessions: ['Introduction to Refactoring & Bad Code Smell', 'The Bloaters', 'The OOP Abuser', 'The Change Preventer', 'The Dispensable', 'The Couplers', 'OOP Smell', 'Abstraction Smell', 'Encapsulation Smell', 'Modularization Smell', 'Hierarchy Smell']
 	}, {
 		name: 'Software Engineering',
-		sessions: ['Introduction to Software Engineering', 'AGILE', 'SCRUM', 'Requirement Engineering', 'Requirement Modeling and UML', 'Software Design Principles', 'Project Management', 'Project Scheduling', 'Risk Analysis', 'SCM', 'Version Control System', 'Reliability Engineering', 'Software Testing', 'Sotware Maintenance', 'DevOps']
+		sessions: ['Introduction to Software Engineering', 'AGILE', 'SCRUM', 'Requirement Engineering', 'Requirement Modeling and UML', 'Software Design Principles', 'Project Management', 'Project Scheduling', 'Risk Analysis', 'SCM', 'Version Control System', 'Reliability Engineering', 'Software Testing', 'Software Maintenance', 'DevOps']
 	}, {
 		name: 'Software Architecture',
 		sessions: ['OOP & SOLID', 'Design Patterns', 'Creational Patterns', 'Structural Pattern', 'behavioral Pattern', 'Software Architecture', 'Layered & Monolithic Architecture', 'Microservices', 'Microkernel']
@@ -103,8 +104,66 @@ const forumGen = {
 	}
 }
 
+const studentForumBodies = [
+	"Does anyone know what's going to be covered in the next session? I want to prepare in advance.",
+	"Can someone explain the difference between the two approaches discussed in class? I keep getting confused.",
+	"I'm having trouble with this week's assignment. Has anyone else run into the same issue?",
+	"When is the deadline for the lab submission? I can't find it anywhere on the portal.",
+	"Is the exam going to cover everything from the beginning of the semester or just the recent sessions?",
+	"Does anyone have notes from last session? I had to miss it due to a family matter.",
+	"I don't understand the last part of the lecture. The explanation went a bit fast. Can someone help?",
+	"Has anyone started on the group project yet? We should probably organize a meeting this week.",
+	"Quick question — are we allowed to use external libraries for the assignment or only the ones from class?",
+	"Just wanted to share a resource I found that explains this topic really well. Hope it helps everyone.",
+	"Is office hours still happening this week or was it moved? I need to ask about my grade.",
+	"How many pages is the report supposed to be? The brief wasn't very clear on that.",
+	"Anyone else finding this topic particularly difficult? I've read the slides three times and still lost.",
+	"Do we need to submit individually or as a group? The assignment sheet says both things in different places.",
+	"Gentle reminder that our group presentation is next week — let's finalize the slides by Thursday.",
+]
+
+const lecturerForumBodies = [
+	"Please submit your assignments before the deadline. Late submissions will not be accepted without prior notice.",
+	"The exam will cover sessions 1 through 6. Please review your notes and the provided reading materials.",
+	"Reminder: attendance is mandatory for next week's session. Please inform me in advance if you cannot attend.",
+	"The lecture material for this week has been uploaded to the portal. Please review it before class.",
+	"Office hours this week will be moved to Thursday 2–4pm. Please plan accordingly.",
+	"A correction to the formula discussed in today's session has been posted. Please update your notes.",
+	"The group project rubric has been updated. Please re-read it carefully before your final submission.",
+	"Results for the midterm exam will be released by end of this week. Check the grades section.",
+	"Next session will include a short quiz covering the last three topics. No calculators allowed.",
+	"Please form your groups for the final project by Friday and submit the group member list via this forum.",
+	"There will be a guest lecture next week. Attendance will be recorded and counts toward participation.",
+	"The assignment deadline has been extended by two days due to the public holiday. New deadline is Friday 11:59pm.",
+	"Please ensure your submissions are in the correct format. Incorrectly formatted files will not be graded.",
+	"A recap of today's session has been uploaded. It covers the points that were most commonly misunderstood.",
+	"Reminder to complete the course evaluation form. Your feedback helps improve the course for future students.",
+]
+
+const studentCommentBodies = [
+	"Thanks, this really helped!",
+	"I had the same question, glad someone asked.",
+	"I think the deadline is on the course schedule page.",
+	"Same issue here. I ended up just emailing the lecturer.",
+	"I can share my notes, give me a moment to upload them.",
+	"Pretty sure it covers everything. Better safe than sorry.",
+	"I found a YouTube video that explains this really well, let me find the link.",
+	"We should make a group chat for this. Anyone have everyone's contact?",
+	"I think external libraries are fine as long as you cite them.",
+	"This is really helpful, bookmarking this.",
+	"I asked during office hours and the answer is yes, individual submission.",
+	"Thanks for the reminder! I almost forgot about the presentation.",
+	"I failed to understand that part too. Going to office hours tomorrow.",
+	"The slides are actually on the portal under session materials.",
+	"Can confirm, the formula correction is important. I got the wrong answer without it.",
+]
+
+function randomBody(pool: string[]): string {
+	return pool[Math.floor(Math.random() * pool.length)]
+}
+
 function createUserParam(id: number, name: string, pass: string, role: string): UserCreateManyInput {
-	const email = name + '@example.com'
+	const email = name.split(" ").join(".").toLowerCase() + '@example.com'
 	return {
 		name: name,
 		email: email,
@@ -144,9 +203,9 @@ async function createCourseGrade(id: number, courseStudents: number[]) {
 	})
 }
 
-function mapForumParam(title: string, userids: number[]): ForumCreateManyCourseInput {
+function mapForumParam(title: string, userids: number[], isLecturer: boolean): ForumCreateManyCourseInput {
 	return {
-		body: util.yapper(util.randintr(forumGen.config.bodySentences)),
+		body: randomBody(isLecturer ? lecturerForumBodies : studentForumBodies),
 		time: new Date(Date.now() + Math.random() * 14 * 86400000),
 		title: title,
 		userId: util.selectRandom(userids)
@@ -158,7 +217,7 @@ async function commentForum(forumId: number, ids: number[], chance: number, pare
 
 	await db.forumComment.createMany({
 		data: replying.map(userid => ({
-			body: util.yapper(util.randintr(forumGen.config.commentBodySentences)),
+			body: randomBody(studentCommentBodies),
 			time: new Date(Date.now() + Math.random() * 14 * 86400000),
 			userId: userid,
 			forumId: forumId,
@@ -189,7 +248,7 @@ async function createCourse(name: string, sessions: string[]) {
 	const gen = await db.course.create({
 		select: {
 			gradesComp: { select: { id: true } },
-			forums: { select: { id: true } },
+			forums: { select: { id: true, userId: true } },
 			sessions: { select: { id: true } }
 		},
 		data: {
@@ -208,8 +267,8 @@ async function createCourse(name: string, sessions: string[]) {
 			forums: {
 				createMany: {
 					data: Array<ForumCreateManyCourseInput>().concat(
-						util.selectRandomMulti(forumGen.lecForumTitle, forumGen.config.lecForums).map(title => mapForumParam(title, courseLecs)),
-						util.selectRandomMulti(forumGen.forumTitle, forumGen.config.studentForums).map(title => mapForumParam(title, courseStudents)),
+						util.selectRandomMulti(forumGen.lecForumTitle, forumGen.config.lecForums).map(title => mapForumParam(title, courseLecs, true)),
+						util.selectRandomMulti(forumGen.forumTitle, forumGen.config.studentForums).map(title => mapForumParam(title, courseStudents, false)),
 					)
 				}
 			},
@@ -247,8 +306,7 @@ async function createCourses() {
 
 const a = await createUsers()
 const b = await createFiles()
-const c = Promise.all([a, b]).then(createCourses)
-
-await Promise.all([a, b, c])
+await Promise.all([a, b])
+await createCourses()
 
 db.$disconnect()
