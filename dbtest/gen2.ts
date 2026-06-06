@@ -19,7 +19,12 @@ const usersGen: [id: number, username: string, password: string][] = [
 	[9911, 'Henry'    , 'henry'   ],
 	[9912, 'Jimmy'    , 'jimmy'   ],
 	[9913, 'foo'      , 'foo'     ],
-	[9999, 'system'   , 'system'  ],
+]
+
+const lecturersGen: [id: number, username: string, password: string][] = [
+	[8900, 'John'     , 'john'    ],
+	[8901, 'Charles'  , 'charles' ],
+	[8902, 'Matthew'  , 'matthew' ]
 ]
 
 const filesGen: [id: string, uid: number, name: string, content: string][] = [
@@ -92,22 +97,27 @@ const forumGen = {
 		lecForums: { min: 3, max: 5 },
 		bodySentences: { min: 3, max: 15 },
 
-		commentChance: 0.5,
+		commentChance: 0.3,
 		commentBodySentences: { min: 1, max: 8 },
-		replyChance: 0.4,
+		replyChance: 0.25,
+	}
+}
+
+function createUserParam(id: number, name: string, pass: string, role: string): UserCreateManyInput {
+	return {
+		name: name,
+		email: name + '@example.com',
+		role: role,
+		id: id,
+		pwhash: authProvider.hashPassword(name, pass),
 	}
 }
 
 async function createUsers() {
-	await db.user.createMany({
-		data: usersGen.map(([id, name, pass]): UserCreateManyInput => ({
-			name: name,
-			email: name + '@example.com',
-			role: 'Student',
-			id: id,
-			pwhash: authProvider.hashPassword(name, pass),
-		}))
-	})
+	const u = usersGen.map(([id, name, pass]) => createUserParam(id, name, pass, 'Student'))
+	const l = lecturersGen.map(([id, name, pass]) => createUserParam(id, name, pass, 'Teacher'))
+
+	await db.user.createMany({ data: u.concat(l) })
 }
 
 async function createFiles() {
@@ -170,7 +180,7 @@ async function addSessionMaterials(id: number) {
 
 async function createCourse(name: string, sessions: string[]) {
 	const courseUsers = util.selectRandomMulti(usersGen, courseGen.config.users).map(v => v[0])
-	const courseLecs = util.selectRandomMulti(courseUsers, courseGen.config.lecturers)
+	const courseLecs = util.selectRandomMulti(lecturersGen, courseGen.config.lecturers).map(v => v[0])
 	const courseStudents = Array.from(new Set(courseUsers).difference(new Set(courseLecs)))
 
 	let sessionStart = Date.now() + Math.random() * 28 * 86400000
@@ -183,7 +193,8 @@ async function createCourse(name: string, sessions: string[]) {
 		},
 		data: {
 			name: name,
-			users: { connect: courseUsers.map(id => ({id})) },
+			students: { connect: courseUsers.map(id => ({id})) },
+			users: { connect: courseUsers.concat(courseLecs).map(id => ({id})) },
 			lecturers: { connect: courseLecs.map(id => ({id})) },
 
 			gradesComp: {

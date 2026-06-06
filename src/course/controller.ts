@@ -1,4 +1,4 @@
-import { Controller, UseGuards, Get, Request, Param } from "@nestjs/common";
+import { Controller, UseGuards, Get, Request, Param, NotFoundException, Body, Post, HttpCode } from "@nestjs/common";
 import CourseProvider from "./provider";
 import AuthGuard from "../user/authguard";
 import CourseGuard from "./guard";
@@ -29,7 +29,7 @@ export default class CourseController {
 	@ApiResponse({ type: [UserProvider.UserInfo] })
 	@UseGuards(CourseGuard.param('id'))
 	async getStudents(@Param('id') id: number) {
-		return this.svc.getUsers(id)
+		return this.svc.getStudents(id)
 	}
 
 	@Get('/course/:id/sessions')
@@ -43,13 +43,31 @@ export default class CourseController {
 	@ApiResponse({ type: [CourseProvider.Grade] })
 	@UseGuards(CourseGuard.param('id'))
 	async getGrades(@Request() req: App.Request, @Param('id') id: number) {
-		return this.svc.getUserGradesCourse(id, req.userId!)
+		return this.svc.getUserCourseGrades(id, req.userId!)
+	}
+
+	@Get('/course/lecturer/:id/grades/student')
+	@ApiResponse({ type: [CourseProvider.GradeList] })
+	@UseGuards(CourseGuard.Lecturer.param('id'))
+	async getStudentGrades(@Param('id') id: number) {
+		const r = this.svc.getCourseAllGrades(id)
+		if (!r) throw new NotFoundException()
+		return r
+	}
+
+	@HttpCode(200)
+	@Post('/course/lecturer/grades/edit')
+	@UseGuards(CourseGuard.Lecturer.create(req => req.body.courseId))
+	async editStudentGrade(@Body() body: CourseProvider.GradeEdit) {
+		const r = this.svc.editCourseGrade(body)
+		if (!r) throw new NotFoundException()
+		return ''
 	}
 
 	@Get('/grades')
 	@ApiResponse({ type: [CourseProvider.CourseGrade] })
 	async getUserGrades(@Request() req: App.Request) {
-		return this.svc.getUserGrades(req.userId!)
+		return this.svc.getStudentAllGrades(req.userId!)
 	}
 
 	@Get('/session/:session')
@@ -58,6 +76,13 @@ export default class CourseController {
 	async getSessionInfo(@Param('session') session: number) {
 		return this.svc.getSessionDetail(session)
 	}
+
+  @HttpCode(200)
+  @Post('/session/:session/files')
+  @UseGuards(CourseGuard.LecturerSession.param('session'))
+  async addSessionFile(@Param('session') session: number, @Body() body: CourseProvider.SessionFileDto) {
+    return this.svc.linkFileToSession(session, body.fileId)
+  }
 
 	@Get('/session/:session/materials')
 	@ApiOperation({ deprecated: true, description: 'Use `/session/:session` instead' })

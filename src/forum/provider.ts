@@ -98,7 +98,12 @@ class ForumProvider {
 	async isOwner(forumId: number, userId: number) {
 		return !!await db.forum.findFirst({
 			select: { id: true },
-			where: { id: forumId, userId: userId }
+			where: {
+				OR: [
+					{ id: forumId, userId: userId },
+					{ id: forumId, course: { lecturers: { some: { id: userId } } } }
+				],
+			}
 		})
 	}
 
@@ -118,7 +123,12 @@ class ForumProvider {
 	async isCommentOwner(commentId: number, userId: number) {
 		return !!await db.forumComment.findFirst({
 			select: { id: true },
-			where: { id: commentId, userId: userId }
+			where: {
+				OR: [
+					{ id: commentId, userId: userId },
+					{ id: commentId, forum: { course: { lecturers: { some: { id: userId } } } } }
+				]
+			}
 		})
 	}
 	async editComment(commentId: number, data: ForumCommentUpdateManyMutationInput) {

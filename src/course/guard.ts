@@ -23,6 +23,25 @@ namespace CourseGuard {
 			return this.courseSvc.sessionHasUser(sessionId, userId)
 		}
 	}
+
+  @Injectable()
+  export abstract class LecturerSession extends IdAuthGuard.Num {
+    constructor(private courseSvc: CourseProvider) { super() }
+    descriptor = 'CourseSessionLecturer'
+    protected async validateNum(req: App.Request, userId: number, sessionId: number) {
+      return this.courseSvc.sessionIsLecturer(sessionId, userId)
+    }
+  }
+
+	@Injectable()
+	export abstract class Lecturer extends IdAuthGuard.Num {
+		constructor(private courseSvc: CourseProvider) { super() }
+		descriptor = 'CourseLecturer'
+
+		protected async validateNum(req: App.Request, userId: number, courseId: number) {
+			return this.courseSvc.isLecturer(courseId, userId)
+		}
+	}
 }
 
 export default CourseGuard

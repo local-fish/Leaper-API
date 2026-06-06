@@ -1,8 +1,10 @@
+import { IsNumber, IsOptional, IsString } from 'class-validator'
 import db from '../common/db'
 import FileProvider from '../file/provider'
 import UserProvider from '../user/provider'
 import { Injectable } from '@nestjs/common'
 import { ApiProperty } from '@nestjs/swagger'
+import type { CourseGradeWhereInput } from '../../prisma/generated/models'
 
 @Injectable()
 class CourseProvider {
@@ -10,18 +12,27 @@ class CourseProvider {
 		const q = await db.course.findMany({
 			select: {
 				id: true, name: true,
-				lecturers: { select: { id: true, name: true, email: true, role: true } },
-				_count: { select: { users: true, sessions: true } }
+				_count: { select: { students: true, sessions: true } },
+        lecturers: {
+        select: { id: true, name: true }
+        },
 			},
 			where: { users: { some: { id: userid } } }
 		})
-		return q.map(({ _count, ...course }): CourseProvider.CourseHeader => ({ ...course, studentCount: _count.users, sessionCount: _count.sessions }))
+		return q.map(({ _count, ...course }): CourseProvider.CourseHeader => ({ ...course, studentCount: _count.students, sessionCount: _count.sessions }))
 	}
 
 	async hasUser(courseId: number, userId: number) {
 		return !!await db.course.findFirst({
 			select: { id: true },
 			where: { id: courseId, users: { some: { id: userId } } }
+		})
+	}
+
+	async isLecturer(courseId: number, userId: number) {
+		return !!await db.course.findFirst({
+			select: { id: true },
+			where: { id: courseId, lecturers: { some: { id: userId } } }
 		})
 	}
 
@@ -44,14 +55,14 @@ class CourseProvider {
 
 	}
 
-	async getUsers(courseId: number): Promise<UserProvider.UserInfo[]> {
+	async getStudents(courseId: number): Promise<UserProvider.UserInfo[]> {
 		return db.user.findMany({
 			select: { id: true, name: true, email: true, role: true },
 			where: { courses: { some: { id: courseId } } }
 		})
 	}
 
-	async getUserGrades(userId: number): Promise<CourseProvider.CourseGrade[]> {
+	async getStudentAllGrades(userId: number): Promise<CourseProvider.CourseGrade[]> {
 		const r = await db.course.findMany({
 			select: {
 				id: true,
@@ -61,13 +72,14 @@ class CourseProvider {
 						name: true,
 						grades: {
 							select: {
-								grade: true
-							}
+								grade: true,
+							},
+              where: { userId: userId }
 						}
 					}
 				}
 			},
-			where: { users: { some: { id: userId } } }
+			where: { students: { some: { id: userId } } }
 		})
 		return r.map(v => ({
 			courseId: v.id,
@@ -79,7 +91,72 @@ class CourseProvider {
 		}))
 	}
 
-	async getUserGradesCourse(courseId: number, userId: number): Promise<CourseProvider.Grade[]> {
+	async getCourseAllGrades(courseId: number): Promise<CourseProvider.GradeList|undefined> {
+		const r = await db.course.findFirst({
+			select: {
+				students: {
+					select: { id: true, name: true }
+				},
+				gradesComp: {
+					select: {
+						name: true,
+						id: true,
+						grades: {
+							select: { id: true, userId: true, grade: true }
+						}
+					}
+				}
+			},
+			where: { id: courseId }
+		})
+		if (!r) return
+		const compMap = new Map(r.gradesComp.map((v,i) => [v.id, i]))
+		const userGrades = new Map(r.students.map(v => [v.id, { user: v, grades: Array(r.gradesComp.length) }]))
+
+		for (const component of r.gradesComp) {
+			const gradeIndex = compMap.get(component.id)!
+			for (const grade of component.grades) {
+				let u = userGrades.get(grade.userId)
+				if (!u) continue
+				u.grades[gradeIndex] = grade.grade
+			}
+		}
+
+		return {
+			components: r.gradesComp.map(({ id, name }) => ({ id, name })),
+			scores: Array.from(userGrades.values())
+		}
+	}
+
+	async editCourseGrade(opts: CourseProvider.GradeEdit) {
+		const valid = !!await db.courseGradeComp.findFirst({
+			select: { id: true },
+			where: { id: opts.componentId, courseId: opts.courseId }
+		})
+		if (!valid) return false
+
+		const selector: CourseGradeWhereInput = { userId: opts.userId, compid: opts.componentId }
+
+		if (opts.grade != undefined) {
+			const updateRes = await db.courseGrade.updateMany({
+				data: { grade: opts.grade },
+				where: selector
+			})
+			if (!updateRes.count) {
+				await db.courseGrade.create({
+					data: { grade: opts.grade, compid: opts.componentId, userId: opts.userId }
+				})
+			}
+		} else {
+			await db.courseGrade.deleteMany({
+				where: selector
+			})
+		}
+
+		return true
+	}
+
+	async getUserCourseGrades(courseId: number, userId: number): Promise<CourseProvider.Grade[]> {
 		const q = await db.courseGradeComp.findMany({
 			select: {
 				name: true,
@@ -114,6 +191,15 @@ class CourseProvider {
 		})
 	}
 
+  async sessionIsLecturer(sessionId: number, userId: number) {
+    const session = await db.courseSession.findUnique({
+      where: { id: sessionId },
+      select: { courseId: true }
+    })
+    if (!session) return false
+    return this.isLecturer(session.courseId, userId)
+  }
+
 	async getSessionDetail(sessionId: number): Promise<CourseProvider.Session | null> {
 		return db.courseSession.findFirst({
 			select: {
@@ -137,6 +223,17 @@ class CourseProvider {
 		})
 	}
 
+  async linkFileToSession(sessionId: number, fileId: string) {
+    return db.courseSession.update({
+      where: { id: sessionId },
+      data: {
+        files: {
+          connect: { id: fileId }
+        }
+      }
+    })
+  }
+
 	/** @deprecated Use {@link getSessionDetail} instead */
 	async getSessionMaterials(sessionId: number) {
 		return await db.file.findMany({
@@ -152,6 +249,8 @@ namespace CourseProvider {
 		declare id: number
 		@ApiProperty({ type: 'string' })
 		declare name: string
+    @ApiProperty({ type: [UserProvider.UserInfo] })
+    declare lecturers: UserProvider.UserInfoHeader[]
 		@ApiProperty({ type: 'number' })
 		declare studentCount: number
 		@ApiProperty({ type: 'number' })
@@ -200,6 +299,52 @@ namespace CourseProvider {
 		@ApiProperty({ type: [FileProvider.File] })
 		declare files: FileProvider.File[]
 	}
+
+	export class UserGrade {
+		@ApiProperty({ type: [UserProvider.UserInfoHeader] })
+		declare user: UserProvider.UserInfoHeader
+		@ApiProperty({ type: 'number', isArray: true, nullable: true })
+		declare grades: number[]
+	}
+
+	export class GradeComponent {
+		@ApiProperty({ type: 'number' })
+		declare id: number
+		@ApiProperty({ type: 'string' })
+		declare name: string
+	}
+
+	export class GradeList {
+		@ApiProperty({ type: [GradeComponent] })
+		declare components: GradeComponent[]
+		@ApiProperty({ type: [UserGrade] })
+		declare scores: UserGrade[]
+	}
+
+	export class GradeEdit {
+		@ApiProperty({ type: 'number' })
+		@IsNumber()
+		declare courseId: number
+
+		@ApiProperty({ type: 'number' })
+		@IsNumber()
+		declare componentId: number
+
+		@ApiProperty({ type: 'number' })
+		@IsNumber()
+		declare userId: number
+
+		@ApiProperty({ type: 'number', required: false })
+		@IsNumber()
+		@IsOptional()
+		declare grade?: number
+	}
+
+  export class SessionFileDto {
+    @IsString()
+    @ApiProperty({ type: 'string' })
+    declare fileId: string
+  }
 }
 
 export default CourseProvider
