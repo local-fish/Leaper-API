@@ -24,7 +24,7 @@ export default class AuthProvider {
 		const hashedpw = this.hashPassword(email, password)
 		const res = await db.user.findFirst({
 			select: { id: true },
-			where: { email: email, pwhash: hashedpw }
+			where: { email: email.toLowerCase(), pwhash: hashedpw }
 		})
 		return res?.id
 	}
