@@ -7,7 +7,7 @@ export namespace AuthControllerSchema {
 	export class LoginBody {
 		@IsString()
 		@ApiProperty({ type: 'string' })
-		declare username: string
+		declare email: string
 
 		@IsString()
 		@ApiProperty({ type: 'string' })
@@ -27,7 +27,7 @@ export default class AuthController {
 	@Post('/login')
 	@ApiResponse({ type: AuthControllerSchema.LoginResponse })
 	async login(@Body() req: AuthControllerSchema.LoginBody): Promise<AuthControllerSchema.LoginResponse> {
-		const account = await this.svc.getIdentifier(req.username, req.password)
+		const account = await this.svc.getIdentifier(req.email, req.password)
 		if (!account) throw new UnauthorizedException('Invalid username or password')
 		const key = await this.svc.generateKey(account)
 		if (!key) throw new UnauthorizedException('Invalid username or password')

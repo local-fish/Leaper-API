@@ -104,12 +104,13 @@ const forumGen = {
 }
 
 function createUserParam(id: number, name: string, pass: string, role: string): UserCreateManyInput {
+	const email = name + '@example.com'
 	return {
 		name: name,
-		email: name + '@example.com',
+		email: email,
 		role: role,
 		id: id,
-		pwhash: authProvider.hashPassword(name, pass),
+		pwhash: authProvider.hashPassword(email, pass),
 	}
 }
 

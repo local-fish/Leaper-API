@@ -16,15 +16,15 @@ export default class AuthProvider {
 		private jwtSvc: JwtService,
 	) {}
 
-	hashPassword(username: string, password: string) {
-		return crypto.createHmac('sha256', process.env.PASSWORD_SECRET!).update(password + username + secretConst).digest()
+	hashPassword(email: string, password: string) {
+		return crypto.createHmac('sha256', process.env.PASSWORD_SECRET!).update(password + email + secretConst).digest()
 	}
 
-	async getIdentifier(username: string, password: string) {
-		const hashedpw = this.hashPassword(username, password)
+	async getIdentifier(email: string, password: string) {
+		const hashedpw = this.hashPassword(email, password)
 		const res = await db.user.findFirst({
 			select: { id: true },
-			where: { name: username, pwhash: hashedpw }
+			where: { email: email, pwhash: hashedpw }
 		})
 		return res?.id
 	}
