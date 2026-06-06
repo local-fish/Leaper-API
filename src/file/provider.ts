@@ -101,8 +101,7 @@ class FileProvider {
       }
     })
     const url = await this.s3.putPresign(undefined, key, '' as any)
-    const clientUrl = url.replace('localhost', process.env.S3_CLIENT_ENDPOINT ?? 'localhost')
-    return { key, clientUrl }
+    return { key, url }
   }
 
   async confirmUpload(key: string) {
