@@ -84,11 +84,11 @@ class FileProvider {
 		return this.s3.head(key)
 	}
 
-	async getPresign(key: string) {
-		return this.s3.getPresign(undefined, key)
+	async getPresign(key: string, filename: string) {
+		return this.s3.getPresign(undefined, key, {ResponseContentDisposition: `attachment; filename="${filename}"`})
   }
 
-  async getPutPresign(userId: number, name: string) {
+  async getPutPresign(userId: number, name: string, contentType?: string) {
     const key = this.randomKey()
     // Pre-created DB record, pass key to FE to then let FE hit the BE with the confirm upload endpoint below.
     await db.file.create({
@@ -100,7 +100,9 @@ class FileProvider {
         gcCluster: this.getCurrentGcCluster(),
       }
     })
-    const url = await this.s3.putPresign(undefined, key, '' as any)
+    const url = await this.s3.putPresign(undefined, key, '', { 
+      ContentType: contentType ?? 'application/octet-stream',
+    })
     return { key, url }
   }
 
