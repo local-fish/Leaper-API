@@ -12,7 +12,10 @@ class CourseProvider {
 		const q = await db.course.findMany({
 			select: {
 				id: true, name: true,
-				_count: { select: { students: true, sessions: true } }
+				_count: { select: { students: true, sessions: true } },
+        lecturers: {
+        select: { id: true, name: true }
+        },
 			},
 			where: { users: { some: { id: userid } } }
 		})
@@ -245,6 +248,8 @@ namespace CourseProvider {
 		declare id: number
 		@ApiProperty({ type: 'string' })
 		declare name: string
+    @ApiProperty({ type: [UserProvider.UserInfo] })
+    declare lecturers: UserProvider.UserInfoHeader[]
 		@ApiProperty({ type: 'number' })
 		declare studentCount: number
 		@ApiProperty({ type: 'number' })
