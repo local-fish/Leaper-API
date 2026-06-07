@@ -243,7 +243,7 @@ async function createCourse(name: string, sessions: string[]) {
 	const courseLecs = util.selectRandomMulti(lecturersGen, courseGen.config.lecturers).map(v => v[0])
 	const courseStudents = Array.from(new Set(courseUsers).difference(new Set(courseLecs)))
 
-	let sessionStart = Date.now() + Math.random() * 28 * 86400000
+	let sessionStart = new Date(Date.now() + Math.random() * 28 * 86400000)
 
 	const gen = await db.course.create({
 		select: {
@@ -277,13 +277,15 @@ async function createCourse(name: string, sessions: string[]) {
 					data: sessions.map((name, i) => {
 						const dur = util.randintr(courseGen.config.sessionDurationHours) * 3600000
 						const gap = util.randintr(courseGen.config.sessionGapHours) * 3600000
-						const startTime = sessionStart
-						const endTime = sessionStart + dur
-						sessionStart += gap
+						const startTime = new Date(sessionStart)
+						if (startTime.getDay() == 0) startTime.setDate(startTime.getDate()+1)
+
+						const endTime = new Date(sessionStart.getTime() + dur)
+						sessionStart.setTime(sessionStart.getTime() + gap)
 
 						return {
-							startTime: new Date(startTime),
-							endTime: new Date(endTime),
+							startTime: startTime,
+							endTime: endTime,
 							sessionNo: i+1,
 							topic: name,
 							location: util.selectRandom(courseGen.locations)
