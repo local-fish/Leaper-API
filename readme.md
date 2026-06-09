@@ -29,3 +29,25 @@ This is the backend for the Leaper project, a basic LMS built around Nest.js and
 ## Running
 
 Run `bun start`
+
+## Generating Data
+
+Note that database generation requires `DEV` to be set to true in `.env`.
+This shoould only be used for development purpose.
+
+### New Data
+
+Run `bun dbtest/gen2.ts`. Make sure to clean the database first.
+If you do not wish to generate S3 files, set `S3_DEV_NOGEN` environment to `true`, e.g. `S3_DEV_NOGEN=true bun dbtest/gen2.ts`.
+
+User examples:
+- Student: `andrew.p@example.com`, password: `fish`
+- Teacher: `john@example.com`, password: `john`
+
+### Wiping Data
+
+Run `bun dbtest/wipe.ts`.
+
+### Listing Data
+
+Run `bun dbtest/test.ts`.
