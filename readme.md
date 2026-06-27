@@ -35,6 +35,10 @@ Run `bun start`
 Note that database generation requires `DEV` to be set to true in `.env`.
 This shoould only be used for development purpose.
 
+### Sample Data
+
+The generated sample data is contained in `sample.sql`. The configured password secret is `e8ZfczuLj1olVpCI-18X9T4mY0RB`.
+
 ### New Data
 
 Run `bun dbtest/gen2.ts`. Make sure to clean the database first.
